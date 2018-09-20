@@ -119,8 +119,8 @@ import { makeColor, clearScreen, requestFullscreen } from "./util.js";
 
     dw.save();
     dw.translateObject(
-      120 + canvas.width / imgData[0].width,
-      canvas.height / imgData[0].height - 25
+      canvas.width / imgData[0].width,
+      canvas.height / imgData[0].height - 150
     );
     dw.drawImg(imgData[0]);
     dw.restore();
