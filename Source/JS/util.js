@@ -18,5 +18,10 @@ let requestFullscreen = element => {
     element.webkitRequestFullscreen();
   }
 };
+let setupCanvasData = (canvas, width, height) => {
+  canvas.width = width;
+  canvas.height = height;
+  return canvas.getContext("2d");
+};
 
-export { makeColor, clearScreen, requestFullscreen };
+export { makeColor, clearScreen, requestFullscreen, setupCanvasData };

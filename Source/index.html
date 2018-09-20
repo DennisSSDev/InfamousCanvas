@@ -9,45 +9,50 @@
 </head>
 
 <body>
-    <canvas id="canvas"></canvas>
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
     <div id="overlay">
-        <div id="controls">
-            <div id="selectors">
-                <div id="checkboxes">
-                    <p><input type="checkbox" name="tintRed" value="tintRed" id="tint"> tintRed </p>
-                    <p><input type="checkbox" name="lines" value="lines" id="lines"> lines </p>
-                    <p><input type="checkbox" name="crazy" value="crazy" id="crazy"> crazy lines </p>
-                    <p><input type="checkbox" name="noise" value="noise" id="noise"> noise </p>
-                    <p><input type="checkbox" name="invert" value="invert" id="invert"> invert </p>
-                    <p><input type="checkbox" name="Bad TV" value="Bad TV" id="BadTV"> Bad TV </p>
-                </div>
-                <div id="sliders">
-                    <p> Circle Radius </p>
-                    <p> <input type="range" min="1" max="300" value="150" id="RadiusSlider"> </p>
-                    <p> Bad TV Speed </p>
-                    <p> <input type="range" min="2" max="10" value="2" id="TVSlider"> </p>
-                    <p> Brightness </p>
-                    <p> <input type="range" min="0" max="100" step="5" value="0" id="Brightness"> </p>
-                    <p> Delay Amount </p>
-                    <p> <input type="range" min="0" max="1" step=".1" value="0" id="delay"> </p>
-                </div>
-                <div id="songs">
-                    <label>Track:
-                        <select id="trackSelect">
-                            <option value="media/New Adventure Theme.mp3">New Adventure Theme</option>
-                            <option value="media/Peanuts Theme.mp3">Peanuts Theme</option>
-                            <option value="media/The Picard Song.mp3">The Picard Song</option>
-                        </select>
-                    </label>
-                </div>
-            </div>
+        <div id="ui">
             <div id="ctrl-loop">
                 <p> <audio controls loop></audio></p>
                 <p id="status">???</p>
             </div>
-        </div>
-        <div id="extra">
-            <button id="fsButton">Go Full Screen</button>
+            <div id="controls">
+                <div id="selectors">
+                    <div id="checkboxes">
+                        <p><input type="checkbox" name="tintRed" value="tintRed" id="tint"> tintRed </p>
+                        <p><input type="checkbox" name="lines" value="lines" id="lines"> lines </p>
+                        <p><input type="checkbox" name="crazy" value="crazy" id="crazy"> crazy lines </p>
+                        <p><input type="checkbox" name="noise" value="noise" id="noise"> noise </p>
+                        <p><input type="checkbox" name="invert" value="invert" id="invert"> invert </p>
+                        <p><input type="checkbox" name="Bad TV" value="Bad TV" id="BadTV"> Bad TV </p>
+                    </div>
+                    <div id="sliders">
+                        <p> Circle Radius </p>
+                        <p> <input type="range" min="1" max="300" value="150" id="RadiusSlider"> </p>
+                        <p> Bad TV Speed </p>
+                        <p> <input type="range" min="2" max="10" value="2" id="TVSlider"> </p>
+                        <p> Brightness </p>
+                        <p> <input type="range" min="0" max="100" step="5" value="0" id="Brightness"> </p>
+                        <p> Delay Amount </p>
+                        <p> <input type="range" min="0" max="1" step=".1" value="0" id="delay"> </p>
+                    </div>
+                    <div id="songs">
+                        <label>Track:
+                            <select id="trackSelect">
+                                <option value="media/New Adventure Theme.mp3">New Adventure Theme</option>
+                                <option value="media/Peanuts Theme.mp3">Peanuts Theme</option>
+                                <option value="media/The Picard Song.mp3">The Picard Song</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="extra">
+                <button id="fsButton">Go Full Screen</button>
+            </div>
         </div>
     </div>
 </body>

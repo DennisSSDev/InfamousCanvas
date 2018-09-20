@@ -2,7 +2,12 @@
 import Draw from "./draw.js";
 import Preloader from "./preloader.js";
 import Audio from "./audio.js";
-import { makeColor, clearScreen, requestFullscreen } from "./util.js";
+import {
+  makeColor,
+  clearScreen,
+  requestFullscreen,
+  setupCanvasData
+} from "./util.js";
 
 (function() {
   "use strict";
@@ -23,20 +28,18 @@ import { makeColor, clearScreen, requestFullscreen } from "./util.js";
     tintRed = false,
     lines = false,
     noise = false,
-    BadTV = false,
-    crazyLines = false;
+    BadTV = false;
 
   let time = 0;
-  let speed = 2;
+  let bInvert = false;
   let adjustment = 0;
+  let data = 0; // will hold the audio array
 
   //Serves as the main function
   function init(data) {
     imgData = data;
     canvas = document.querySelector("canvas");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    ctx = canvas.getContext("2d");
+    ctx = setupCanvasData(canvas, window.innerWidth, window.innerHeight);
     dw = new Draw(ctx);
 
     // Audio Related init
@@ -48,7 +51,6 @@ import { makeColor, clearScreen, requestFullscreen } from "./util.js";
 
     //All UI setup
     setupUI();
-
     // start animation loop
     update();
   }
@@ -69,24 +71,16 @@ import { makeColor, clearScreen, requestFullscreen } from "./util.js";
     document.querySelector("#lines").addEventListener("change", e => {
       lines = e.target.checked;
     });
-    document.querySelector("#crazy").addEventListener("change", e => {
-      crazyLines = e.target.checked;
-    });
+    document.querySelector("#crazy").addEventListener("change", e => {});
     document.querySelector("#noise").addEventListener("change", e => {
       noise = e.target.checked;
     });
     document.querySelector("#invert").addEventListener("change", e => {
       invert = e.target.checked;
     });
-    document.querySelector("#BadTV").addEventListener("change", e => {
-      BadTV = e.target.checked;
-    });
-    document.querySelector("#TVSlider").addEventListener("input", e => {
-      speed = e.target.value;
-    });
-    document.querySelector("#delay").addEventListener("input", e => {
-      delayAmount = e.target.value;
-    });
+    document.querySelector("#BadTV").addEventListener("change", e => {});
+    document.querySelector("#TVSlider").addEventListener("input", e => {});
+    document.querySelector("#delay").addEventListener("input", e => {});
     document.querySelector("#Brightness").addEventListener("input", e => {
       adjustment = e.target.value;
       allowedAdjustment = true;
@@ -96,15 +90,13 @@ import { makeColor, clearScreen, requestFullscreen } from "./util.js";
   function update() {
     // this schedules a call to the update() method in 1/60 seconds
     requestAnimationFrame(update);
-    time += 0.1;
-
     /*
         Nyquist Theorem
         http://whatis.techtarget.com/definition/Nyquist-Theorem
         The array of data we get back is 1/2 the size of the sample rate 
     */
     // create a new array of 8-bit integers (0-255)
-    let data = new Uint8Array(NUM_SAMPLES / 2);
+    data = new Uint8Array(NUM_SAMPLES / 2);
 
     // notice these arrays can be passed "by reference"
     AudioManager.analyserNode.getByteFrequencyData(data);
@@ -119,8 +111,8 @@ import { makeColor, clearScreen, requestFullscreen } from "./util.js";
 
     dw.save();
     dw.translateObject(
-      canvas.width / imgData[0].width - 70,
-      canvas.height / imgData[0].height - 150
+      canvas.width / 2 - imgData[0].width / 2,
+      canvas.height / 2 - imgData[0].height / 2
     );
     dw.drawImg(imgData[0]);
     dw.restore();
@@ -198,7 +190,6 @@ import { makeColor, clearScreen, requestFullscreen } from "./util.js";
       ctx.restore();
     }
     ctx.restore();
-
     manipulatePixels();
   }
 
@@ -227,16 +218,20 @@ import { makeColor, clearScreen, requestFullscreen } from "./util.js";
           green = data[i + 1],
           blue = data[i + 2];
         data[i] = 255 - red;
-        data[i + 1] =
-          255 -
-          green *
-            Math.min(
-              Math.max(Math.sin(time / 10) + Math.cos(time / 10), 0.5),
-              1
-            );
+
+        if (time > 50 && bInvert) {
+          bInvert = false;
+        } else if (time < -50 && !bInvert) {
+          bInvert = true;
+        }
+
+        if (bInvert) time += 0.01;
+        else time -= 0.01;
+
+        data[i + 1] = 255 - green * (time / 2);
         data[i + 2] = 255 - blue;
       }
-      if (noise && Math.random() < 0.05) {
+      if (noise && Math.floor(Math.random() * 300 + 1) < 2) {
         data[i] = data[i + 1] = data[i + 2] = 255;
       }
       if (lines) {
@@ -254,5 +249,9 @@ import { makeColor, clearScreen, requestFullscreen } from "./util.js";
 
   window.addEventListener("load", () => {
     loadManager.LoadImages(["./images/background.jpg"], init);
+  });
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   });
 })();
