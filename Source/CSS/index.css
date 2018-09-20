@@ -1,0 +1,107 @@
+body {
+    background: #eeeeee;
+    font-family: tahoma, verdana, sans serif;
+    margin: 0 auto;
+    width: 50%;
+}
+
+canvas {
+    position: absolute;
+    z-index: 0;
+    background: black;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+}
+
+#overlay {
+    position: absolute;
+    z-index: 1;
+    width: 500px;
+    height: 95vh;
+}
+
+input[type="checkbox"] {
+    width: 12px;
+    height: 12px;
+
+    color: black;
+}
+
+#controls {
+    position: relative;
+}
+
+#selectors {
+    color: white;
+    margin-top: 50px;
+    padding: 20px;
+    position: relative;
+    right: 300px;
+    width: 200px;
+    background: rgb(105, 105, 105);
+    border-radius: 5px;
+}
+
+#checkboxes {
+    width: 250px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+#checkboxes p {
+    width: 50%;
+}
+
+#extra {
+    position: relative;
+    left: 1250px;
+    top: 270px;
+    width: 100px;
+}
+
+#sliders {
+    width: 250px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: stretch;
+}
+
+#sliders p {
+    width: 100px;
+    height: 10px;
+}
+
+#songs {
+    padding-top: 30px;
+}
+
+#sliders input {
+    left: 50px;
+    width: 100px;
+}
+
+#ctrl-loop {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    left: 225px;
+    bottom: 420px;
+    margin: 0 auto;
+    padding: 0;
+
+}
+
+audio {
+    height: 10px;
+    width: 280px;
+}
+
+#status {
+    color: white;
+    line-height: 0px;
+    margin-bottom: 0px;
+}
