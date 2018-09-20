@@ -123,7 +123,22 @@ import {
       ctx.save();
       ctx.strokeStyle = `rgba(255,0,0,0.6)`;
       ctx.beginPath();
-      ctx.translate(i * 50, 256 - data[i] - 20);
+      ctx.translate(i * 50, 330 - data[i] - 20);
+      ctx.moveTo(0, 0);
+      ctx.lineTo(25, 25);
+      ctx.lineTo(50, 0);
+
+      ctx.closePath();
+      ctx.stroke();
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = `rgba(255,235,255,0.8)`;
+      ctx.beginPath();
+      let randVal = 0;
+      if (data[0] != 0) randVal = Math.random();
+      ctx.translate(i * 50, 450 - (data[i] - randVal * 5 - 20));
       ctx.moveTo(0, 0);
       ctx.lineTo(25, 25);
       ctx.lineTo(50, 0);
@@ -136,7 +151,7 @@ import {
       ctx.save();
       ctx.strokeStyle = `rgba(25,0,130,0.8)`;
       ctx.beginPath();
-      ctx.translate(i * 50, 170 + (data[i] - 20));
+      ctx.translate(i * 50, 200 + (data[i] - 20));
       ctx.moveTo(0, 0);
       ctx.lineTo(25, 25);
       ctx.lineTo(50, 0);
