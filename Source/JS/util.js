@@ -1,5 +1,5 @@
 "use strict";
-let makeColor = (red, green, blue, alpha) => {
+let makeColor = (red, green, blue, alpha = 1.0) => {
   let color = "rgba(" + red + "," + green + "," + blue + ", " + alpha + ")";
   return color;
 };

@@ -32,13 +32,12 @@ export default class Draw {
   toVertex(x, y) {
     this.ctx.lineTo(x, y);
   }
-  fillColor(rgba = {}) {
-    this.ctx.fillStyle = `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
-    console.log(this.ctx.fillStyle);
+  fillColor(rgba = "black") {
+    this.ctx.fillStyle = rgba;
     this.ctx.fill();
   }
-  strokeColor(rgba = {}) {
-    this.ctx.strokeStyle = `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
+  strokeColor(rgba = "black") {
+    this.ctx.strokeStyle = rgba;
     this.ctx.stroke();
   }
 }
