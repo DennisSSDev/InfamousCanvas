@@ -11,10 +11,9 @@ import {
 
 (function() {
   "use strict";
-
   const loadManager = new Preloader();
-  let dw;
-  let imgData;
+  let dw; //draw lib
+  let imgData; //will hold preloader data
   //Audio vars
   let AudioManager;
   const NUM_SAMPLES = 256;
@@ -22,27 +21,31 @@ import {
   //Canvas vars
   let canvas, ctx;
 
-  //Img effects
-  let maxRadius = 100;
+  //Img effect togglers
   let invert = false,
     tintRed = false,
     lines = false,
     noise = false,
-    BadTV = false;
+    BadTV = false,
+    bInvert = false;
 
   let time = 0;
-  let bInvert = false;
   let adjustment = 0;
   let data = 0; // will hold the audio array
 
-  //Serves as the main function
+  //Serves as the main entrance point
   function init(data) {
+    //grab the preloaded images
     imgData = data;
+
+    //canvas init
     canvas = document.querySelector("canvas");
     ctx = setupCanvasData(canvas, window.innerWidth, window.innerHeight);
+
+    //drawer init
     dw = new Draw(ctx);
 
-    // Audio Related init
+    // Audio init
     AudioManager = new Audio(
       document.querySelector("audio"),
       new (window.AudioContext || window.webkitAudioContext)(),
@@ -81,10 +84,7 @@ import {
     document.querySelector("#BadTV").addEventListener("change", e => {});
     document.querySelector("#TVSlider").addEventListener("input", e => {});
     document.querySelector("#delay").addEventListener("input", e => {});
-    document.querySelector("#Brightness").addEventListener("input", e => {
-      adjustment = e.target.value;
-      allowedAdjustment = true;
-    });
+    document.querySelector("#Brightness").addEventListener("input", e => {});
   };
 
   function update() {
@@ -103,108 +103,54 @@ import {
     // OR
     //analyserNode.getByteTimeDomainData(data);
     clearScreen(ctx);
+
+    //background
     ctx.save();
     ctx.fillStyle = "black";
     ctx.globalAlpha = 0.2;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
 
+    //skullhead
     dw.save();
-    dw.translateObject(
+    dw.translate(
       canvas.width / 2 - imgData[0].width / 2,
       canvas.height / 2 - imgData[0].height / 2
     );
     dw.drawImg(imgData[0]);
     dw.restore();
 
-    // loop through the data and draw!
-    ctx.save();
-    for (var i = 0; i < data.length; i++) {
-      ctx.save();
-      ctx.strokeStyle = `rgba(255,0,0,0.6)`;
-      ctx.beginPath();
-      ctx.translate(i * 50, 330 - data[i] - 20);
-      ctx.moveTo(0, 0);
-      ctx.lineTo(25, 25);
-      ctx.lineTo(50, 0);
+    //wings
+    dw.save();
+    dw.translate(1080, 750);
+    dw.newL();
+    dw.toVertex(80, -180);
+    dw.toVertex(95, -190);
+    dw.toVertex(97, -230);
+    dw.toVertex(205, -350); //move this lower
+    dw.toVertex(210, -375); //move this lower
+    dw.toVertex(330, -660);
+    dw.toVertex(328, -590);
+    dw.toVertex(308, -500);
+    dw.toVertex(326, -525);
+    dw.toVertex(330, -480);
+    dw.toVertex(370, -500);
+    dw.toVertex(335, -470);
+    dw.toVertex(290, -340);
+    dw.toVertex(275, -330);
+    dw.toVertex(275, -315);
+    dw.toVertex(240, -240); //end of top part of the wing
+    dw.toVertex(380, -275);
+    dw.toVertex(540, -500);
+    dw.toVertex(480, -400);
+    //final vertex
+    dw.toVertex(5, 100);
 
-      ctx.closePath();
-      ctx.stroke();
-      ctx.fill();
-      ctx.restore();
+    dw.close();
+    dw.fillColor({ r: 255, g: 0, b: 0, a: 1 });
+    dw.restore();
 
-      ctx.save();
-      ctx.strokeStyle = `rgba(255,235,255,0.8)`;
-      ctx.beginPath();
-      let randVal = 0;
-      if (data[0] != 0) randVal = Math.random();
-      ctx.translate(i * 50, 450 - (data[i] - randVal * 5 - 20));
-      ctx.moveTo(0, 0);
-      ctx.lineTo(25, 25);
-      ctx.lineTo(50, 0);
-
-      ctx.closePath();
-      ctx.stroke();
-      ctx.fill();
-      ctx.restore();
-
-      ctx.save();
-      ctx.strokeStyle = `rgba(25,0,130,0.8)`;
-      ctx.beginPath();
-      ctx.translate(i * 50, 200 + (data[i] - 20));
-      ctx.moveTo(0, 0);
-      ctx.lineTo(25, 25);
-      ctx.lineTo(50, 0);
-
-      ctx.closePath();
-      ctx.stroke();
-      ctx.fill();
-      ctx.restore();
-
-      var percent = data[i] / 255;
-      var circleRadius = percent * maxRadius;
-      ctx.beginPath();
-      ctx.fillStyle = makeColor(255, 111, 111, 0.34 - percent / 3.0);
-      ctx.arc(
-        canvas.width / 2,
-        canvas.height / 2,
-        circleRadius,
-        0,
-        2 * Math.PI,
-        false
-      );
-      ctx.fill();
-      ctx.closePath();
-      // blue-ish circles, bigger, more transparent
-      ctx.beginPath();
-      ctx.fillStyle = makeColor(0, 0, 255, 0.1 - percent / 10.0);
-      ctx.arc(
-        canvas.width / 2,
-        canvas.height / 2,
-        circleRadius * 1.5,
-        0,
-        2 * Math.PI,
-        false
-      );
-      ctx.fill();
-      ctx.closePath();
-      // yellow-ish circles, smaller
-      ctx.save();
-      ctx.beginPath();
-      ctx.fillStyle = makeColor(200, 200, 0, 0.5 - percent / 5.0);
-      ctx.arc(
-        canvas.width / 2,
-        canvas.height / 2,
-        circleRadius * 0.5,
-        0,
-        2 * Math.PI,
-        false
-      );
-      ctx.fill();
-      ctx.closePath();
-      ctx.restore();
-    }
-    ctx.restore();
+    //image effects
     manipulatePixels();
   }
 
@@ -262,6 +208,7 @@ import {
     ctx.putImageData(imageData, 0, 0);
   };
 
+  //window events. keep them in main as only classes that are added to the html can be using the window object
   window.addEventListener("load", () => {
     loadManager.LoadImages(["./images/background.jpg"], init);
   });

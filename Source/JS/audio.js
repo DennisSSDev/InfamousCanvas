@@ -10,6 +10,7 @@ export default class Audio {
     );
   }
 
+  //needs more code for hooking up additional filters
   createWebAudioContextWithAnalyserNode(audioElement) {
     let analyserNode, sourceNode;
     // create an analyser node
