@@ -10,7 +10,7 @@ export default class Audio {
     );
   }
 
-  //needs more code for hooking up additional filters
+  //needs more filters so that the audio could be manipulated more
   createWebAudioContextWithAnalyserNode(audioElement) {
     let analyserNode, sourceNode;
     // create an analyser node
@@ -52,5 +52,14 @@ export default class Audio {
     this.audioElement.play();
     this.audioElement.volume = 0.2;
     document.querySelector("#status").innerHTML = "Now playing: " + path;
+  }
+
+  playSound(path) {
+    let snd = new Audio();
+    let src = document.createElement("source");
+    src.type = "audio/mpeg";
+    src.src = path;
+    snd.appendChild(src);
+    snd.play();
   }
 }

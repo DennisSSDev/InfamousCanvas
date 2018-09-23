@@ -26,11 +26,17 @@ export default class Draw {
     this.ctx.beginPath();
     this.ctx.moveTo(x, y);
   }
+  open() {
+    this.ctx.beginPath();
+  }
   close() {
     this.ctx.closePath();
   }
   toVertex(x, y) {
     this.ctx.lineTo(x, y);
+  }
+  ellipse(x, y, radX, radY, rot, stAngle, endAngle, anticlockwise = false) {
+    this.ctx.ellipse(x, y, radX, radY, rot, stAngle, endAngle, anticlockwise);
   }
   fillColor(rgba = "black") {
     this.ctx.fillStyle = rgba;
@@ -39,5 +45,8 @@ export default class Draw {
   strokeColor(rgba = "black") {
     this.ctx.strokeStyle = rgba;
     this.ctx.stroke();
+  }
+  get context() {
+    return this.ctx;
   }
 }
