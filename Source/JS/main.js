@@ -69,6 +69,7 @@ import {
       new (window.AudioContext || window.webkitAudioContext)(),
       NUM_SAMPLES
     );
+    AudioManager.playStream("./media/infamousTrack.mp3");
 
     flames = [
       new SpriteSheet({
@@ -110,8 +111,6 @@ import {
 
     //All UI setup
     setupUI();
-
-    AudioManager.playStream("./media/infamousTrack.mp3");
     // start animation loop
     update();
   }
