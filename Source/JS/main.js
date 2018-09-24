@@ -3,6 +3,7 @@ import Preloader from "./preloader.js";
 import Audio from "./audio.js";
 import BloodSprite from "./JS_Sprites/blood.js";
 import { WingData, FlapData } from "./JS_Sprites/wingData.js";
+import SpriteSheet from "./JS_Sprites/SpriteSheet.js";
 import {
   makeColor,
   clearScreen,
@@ -37,6 +38,11 @@ import {
 
   //bullSounds
   let soundEff;
+  //flame sprites
+  let flames = [];
+  //vortex Eyes
+  let vortexEyes = [];
+
   //Serves as the main entrance point
   function init(data) {
     //grab the preloaded images
@@ -64,10 +70,48 @@ import {
       NUM_SAMPLES
     );
 
+    flames = [
+      new SpriteSheet({
+        context: ctx,
+        width: 800,
+        height: 125,
+        image: imgData[1],
+        ticksPerFrame: 2,
+        numberOfFrames: 10
+      }),
+      new SpriteSheet({
+        context: ctx,
+        width: 800,
+        height: 125,
+        image: imgData[1],
+        ticksPerFrame: 1,
+        numberOfFrames: 10
+      })
+    ];
+
+    vortexEyes = [
+      new SpriteSheet({
+        context: ctx,
+        width: 1362,
+        height: 100,
+        image: imgData[2],
+        ticksPerFrame: 1,
+        numberOfFrames: 16
+      }),
+      new SpriteSheet({
+        context: ctx,
+        width: 1362,
+        height: 100,
+        image: imgData[2],
+        ticksPerFrame: 1,
+        numberOfFrames: 16
+      })
+    ];
+
     //All UI setup
     setupUI();
 
-    AudioManager.playStream("media/New Adventure Theme.mp3");
+    AudioManager.playStream("./media/infamousTrack.mp3");
     // start animation loop
     update();
   }
@@ -173,6 +217,27 @@ import {
     dw.fillColor(makeColor(128, 0, 0));
     dw.restore();
 
+    dw.save();
+    dw.translate(canvas.width / 2 - 70, canvas.height / 2 - 110);
+    flames[0].update();
+    flames[0].render();
+    dw.translate(140, 0);
+    dw.scale(-1, 1);
+    flames[1].update();
+    flames[1].render();
+    dw.restore();
+
+    dw.save();
+    dw.translate(canvas.width / 2 - 75, canvas.height / 2 - 120);
+    dw.scale(0.4, 0.4);
+    vortexEyes[0].update();
+    vortexEyes[0].render();
+    dw.translate(380, 0);
+    dw.scale(-1, 1);
+    vortexEyes[1].update();
+    vortexEyes[1].render();
+    dw.restore();
+
     //image effects
     manipulatePixels();
   }
@@ -232,21 +297,12 @@ import {
         let red = data[i],
           green = data[i + 1],
           blue = data[i + 2];
+
         data[i] = 255 - red;
-
-        if (time > 50 && bInvert) {
-          bInvert = false;
-        } else if (time < -50 && !bInvert) {
-          bInvert = true;
-        }
-
-        if (bInvert) time += 0.01;
-        else time -= 0.01;
-
-        data[i + 1] = 255 - green * (time / 2);
+        data[i + 1] = 255 - green;
         data[i + 2] = 255 - blue;
       }
-      if (noise && Math.floor(Math.random() * 300 + 1) < 2) {
+      if (noise && Math.floor(Math.random() * 500) < 2) {
         data[i] = data[i + 1] = data[i + 2] = 255;
       }
       if (lines) {
@@ -265,7 +321,14 @@ import {
   //window events.
   //Keep in main as only .js files that were added to html can use the window object
   window.addEventListener("load", () => {
-    loadManager.LoadImages(["./images/background_crop.jpg"], init);
+    loadManager.LoadImages(
+      [
+        "./images/background_crop.jpg",
+        "./images/flames.png",
+        "./images/vortex.jpg"
+      ],
+      init
+    );
   });
   window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
