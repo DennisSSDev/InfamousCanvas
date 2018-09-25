@@ -43,9 +43,6 @@ export default class SpriteSheet {
     }
   }
   render() {
-    // Clear the canvas
-    //that.context.clearRect(0, 0, that.width, that.height);
-
     // Draw the animation
     this.context.drawImage(
       this.image,

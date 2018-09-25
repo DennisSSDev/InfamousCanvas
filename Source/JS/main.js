@@ -216,6 +216,7 @@ import {
     dw.fillColor(makeColor(128, 0, 0));
     dw.restore();
 
+    //animate flames
     dw.save();
     dw.translate(canvas.width / 2 - 70, canvas.height / 2 - 110);
     flames[0].update();
@@ -226,6 +227,7 @@ import {
     flames[1].render();
     dw.restore();
 
+    //animate vortex
     dw.save();
     dw.translate(canvas.width / 2 - 75, canvas.height / 2 - 120);
     dw.scale(0.4, 0.4);
