@@ -2,6 +2,7 @@
 export default class Audio {
   constructor(audioElement, audioCtx, NUM_SAMPLES) {
     this.delayNode = undefined;
+    this.delayAmount = 0;
     this.NUM_SAMPLES = NUM_SAMPLES;
     this.audioCtx = audioCtx;
     this.audioElement = audioElement;
@@ -16,9 +17,9 @@ export default class Audio {
     // create an analyser node
     analyserNode = this.audioCtx.createAnalyser();
 
-    if (this.delayNode != undefined) {
-      delayNode = this.audioCtx.createDelay();
-      delayNode.delayTime.value = delayAmount;
+    if (this.delayNode == undefined) {
+      this.delayNode = this.audioCtx.createDelay();
+      this.delayNode.delayTime.value = this.delayAmount;
     }
 
     /*
@@ -32,16 +33,19 @@ export default class Audio {
 
     // fft stands for Fast Fourier Transform
     analyserNode.fftSize = this.NUM_SAMPLES;
+
     // this is where we hook up the <audio> element to the analyserNode
-    console.log(this.audioCtx);
+    //console.log(this.audioCtx);
     sourceNode = this.audioCtx.createMediaElementSource(audioElement);
-    sourceNode.connect(analyserNode);
+    sourceNode.connect(this.audioCtx.destination);
     //delay node for... Delaying sounds
     if (this.delayNode != undefined) {
-      sourceNode.connect(delayNode);
-      delayNode.connect(analyserNode);
+      sourceNode.connect(this.delayNode);
+      this.delayNode.connect(analyserNode);
     }
-
+    else{
+      sourceNode.connect(analyserNode);
+    }
     // here we connect to the destination i.e. speakers
     analyserNode.connect(this.audioCtx.destination);
     return analyserNode;
@@ -52,6 +56,13 @@ export default class Audio {
     this.audioElement.play();
     this.audioElement.volume = 0.2;
     document.querySelector("#status").innerHTML = "Now playing: " + path;
+  }
+
+  selectStream(path) {
+    this.audioElement.src = path;
+    this.audioElement.autoplay = false;
+    this.audioElement.volume = 0.2;
+    document.querySelector("#status").innerHTML = "Selected track: " + path;
   }
 
   playSound(path) {

@@ -16,28 +16,25 @@
     <div id="overlay">
         <div id="ui">
             <div id="ctrl-loop">
-                <p> <audio controls loop controlsList="nodownload"></audio></p>
+                <p> <audio controls loop controlsList="nodownload" autostart="false"></audio></p>
                 <p id="status">???</p>
             </div>
             <div id="controls">
                 <div id="selectors">
                     <div id="checkboxes">
-                        <p><input type="checkbox" name="tintRed" value="tintRed" id="tint"> tintRed </p>
-                        <p><input type="checkbox" name="lines" value="lines" id="lines"> lines </p>
-                        <p><input type="checkbox" name="crazy" value="crazy" id="crazy"> crazy lines </p>
-                        <p><input type="checkbox" name="noise" value="noise" id="noise"> noise </p>
-                        <p><input type="checkbox" name="invert" value="invert" id="invert"> invert </p>
-                        <p><input type="checkbox" name="Bad TV" value="Bad TV" id="BadTV"> Bad TV </p>
+                        <p><input type="checkbox" name="tintRed" value="tintRed" id="tint"> Red Filter </p>
+                        <p><input type="checkbox" name="lines" value="lines" id="lines"> Horizontal<br> Lines </p>
+                        <p><input type="checkbox" name="crazy" value="crazy" id="crazy"> Crazy Lines </p>
+                        <p><input type="checkbox" name="noise" value="noise" id="noise"> Static </p>
+                        <p><input type="checkbox" name="invert" value="invert" id="invert"> Invert Colors </p>
                     </div>
                     <div id="sliders">
-                        <p> Circle Radius </p>
-                        <p> <input type="range" min="1" max="300" value="150" id="RadiusSlider"> </p>
-                        <p> Bad TV Speed </p>
-                        <p> <input type="range" min="2" max="10" value="2" id="TVSlider"> </p>
+                        <p> Wing Scale </p>
+                        <p> <input type="range" min="1" max="5" value="1" id="scaleSlider"> </p>
                         <p> Brightness </p>
-                        <p> <input type="range" min="0" max="100" step="5" value="0" id="Brightness"> </p>
+                        <p> <input type="range" min="0" max="100" step="5" value="0" id="brightnessSlider"> </p>
                         <p> Delay Amount </p>
-                        <p> <input type="range" min="0" max="1" step=".1" value="0" id="delay"> </p>
+                        <p> <input type="range" min="0.0" max="1.0" step="0.1" value="0.0" id="delaySlider"> </p>
                     </div>
                     <div id="songs">
                         <label>Track:
