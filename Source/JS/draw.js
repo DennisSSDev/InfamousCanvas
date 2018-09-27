@@ -38,6 +38,9 @@ export default class Draw {
   ellipse(x, y, radX, radY, rot, stAngle, endAngle, anticlockwise = false) {
     this.ctx.ellipse(x, y, radX, radY, rot, stAngle, endAngle, anticlockwise);
   }
+  quadCurveTo(cntrP_X = 0, cntrP_Y = 0, x = 0, y = 0) {
+    this.ctx.quadraticCurveTo(cntrP_X, cntrP_Y, x, y);
+  }
   fillColor(rgba = "black") {
     this.ctx.fillStyle = rgba;
     this.ctx.fill();

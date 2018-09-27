@@ -2,8 +2,9 @@ import Draw from "./draw.js";
 import Preloader from "./preloader.js";
 import Audio from "./audio.js";
 import BloodSprite from "./JS_Sprites/blood.js";
-import { WingData, FlapData } from "./JS_Sprites/wingData.js";
+import { WingData, FlapData, NeonData } from "./JS_Sprites/wingData.js";
 import SpriteSheet from "./JS_Sprites/SpriteSheet.js";
+import NeonPower from "./JS_Sprites/neonPower.js";
 import {
   makeColor,
   clearScreen,
@@ -42,6 +43,8 @@ import {
   let flames = [];
   //vortex Eyes
   let vortexEyes = [];
+
+  let neonPower;
 
   //Serves as the main entrance point
   function init(data) {
@@ -108,6 +111,8 @@ import {
         numberOfFrames: 16
       })
     ];
+
+    neonPower = new NeonPower(dw, NeonData, makeColor(255, 131, 193, 255));
 
     //All UI setup
     setupUI();
@@ -239,6 +244,11 @@ import {
     vortexEyes[1].render();
     dw.restore();
 
+    dw.save();
+    dw.translate(380, 100);
+    neonPower.update(data);
+    neonPower.render();
+    dw.restore();
     //image effects
     manipulatePixels();
   }
