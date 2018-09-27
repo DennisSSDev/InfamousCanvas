@@ -1,17 +1,27 @@
+import { makeColor } from "../util.js";
+
 //A couple of curves drawn as an outline of the bull head and wings
-"use strict";
+("use strict");
 export default class NeonPower {
   constructor(
     drawRef,
     NeonData = [],
     color,
-    startingLocation = { x: 50, y: 50 }
+    startingLocation = { x: 50, y: 50 },
+    lineWidth = 6,
+    interpColor = false
   ) {
     this.drawRef = drawRef;
     this.NeonData = NeonData;
     this.Offsets = new Uint8Array(NeonData.length * 2);
     this.color = color;
+    this.r = 255;
+    this.g = 20;
+    this.b = 177;
+    this.colorToLerpTo = 0;
     this.startLoc = startingLocation;
+    this.lineWidth = lineWidth;
+    this.interpColor = interpColor;
   }
   update(data) {
     for (let i = 0; i < this.Offsets.length; i += 2) {
@@ -78,8 +88,49 @@ export default class NeonPower {
       OffsetIterator += 2;
     }
     this.drawRef.context.lineJoin = "round";
-    this.drawRef.context.lineWidth = 10;
+    this.drawRef.context.lineWidth = this.lineWidth;
+    if (this.interpColor) this.updateColor();
     this.drawRef.strokeColor(this.color);
     this.drawRef.close(); //Could be removed later on
+  }
+  updateColor() {
+    //147, 255, 20
+    if (this.colorToLerpTo == 0) {
+      if (this.r != 255) {
+        this.r++;
+        if (this.g != 20) this.g--;
+        if (this.b != 147) this.b--;
+        this.color = makeColor(this.r, this.g, this.b);
+      } else {
+        this.g = 20;
+        this.b = 147;
+        this.colorToLerpTo = 1;
+        this.color = makeColor(this.r, this.g, this.b);
+      }
+    } else if (this.colorToLerpTo == 1) {
+      if (this.g != 255) {
+        this.g++;
+        if (this.b != 20) this.b--;
+        if (this.r != 147) this.r--;
+        this.color = makeColor(this.r, this.g, this.b);
+      } else {
+        this.r = 147;
+        this.b = 20;
+        this.colorToLerpTo = 2;
+        this.color = makeColor(this.r, this.g, this.b);
+      }
+    } else if (this.colorToLerpTo == 2) {
+      if (this.b != 255) {
+        this.b++;
+        if (this.r != 20) this.r--;
+        if (this.g != 147) this.g--;
+        this.color = makeColor(this.r, this.g, this.b);
+      } else {
+        this.g = 147;
+        this.r = 20;
+        this.colorToLerpTo = 0;
+        this.color = makeColor(this.r, this.g, this.b);
+      }
+    }
   }
 }

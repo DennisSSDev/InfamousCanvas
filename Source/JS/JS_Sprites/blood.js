@@ -6,6 +6,8 @@ export default class BloodSprite {
   constructor(x, y, drawRef) {
     this.x = x;
     this.y = y;
+    this.canvasX = x;
+    this.canvasY = y;
     this.radX = Math.random() * 5 + 15;
     this.radY = Math.random() * 7 + 15;
     this.drawObj = drawRef;
@@ -32,8 +34,12 @@ export default class BloodSprite {
       }, this.delay);
     } else {
       this.dead = true;
-      this.Xpos = Math.random() * 1100 + 250;
-      this.Ypos = Math.random() * 600 + 50;
+      let inversion = Math.random() <= 0.5 ? -1 : 1;
+      let inversion2 = Math.random() <= 0.5 ? -1 : 1;
+      this.Xpos =
+        this.canvasX + Math.random() * (this.canvasX - 200) * inversion;
+      this.Ypos =
+        this.canvasY + Math.random() * (this.canvasY - 100) * inversion2;
       this.blueTint = Math.random() * 80;
       this.queueLife();
     }
@@ -49,7 +55,9 @@ export default class BloodSprite {
       this.queueDeath();
     }
   }
-  update(scaleXUpdate = 1, scaleYUpdate = 1) {
+  update(scaleXUpdate = 1, scaleYUpdate = 1, canvasX, canvasY) {
+    this.canvasX = canvasX;
+    this.canvasY = canvasY;
     this.drawObj.save();
     this.drawObj.translate(this.x, this.y);
     this.setScale(scaleXUpdate, scaleYUpdate);

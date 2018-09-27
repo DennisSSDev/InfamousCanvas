@@ -44,7 +44,7 @@ import {
   //vortex Eyes
   let vortexEyes = [];
 
-  let neonPower;
+  let neonPowerArr = [];
 
   //Serves as the main entrance point
   function init(data) {
@@ -63,7 +63,9 @@ import {
     dw = new Draw(ctx);
 
     for (let i = 0; i < 30; i++) {
-      bdSpriteArray.push(new BloodSprite(300, 300, dw));
+      bdSpriteArray.push(
+        new BloodSprite(canvas.width / 2, canvas.height / 2, dw)
+      );
     }
 
     // Audio init
@@ -73,7 +75,7 @@ import {
       NUM_SAMPLES,
       0
     );
-    //AudioManager.playStream("./media/infamousTrack.mp3");    
+    //AudioManager.playStream("./media/infamousTrack.mp3");
     AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
 
     flames = [
@@ -114,7 +116,17 @@ import {
       })
     ];
 
-    neonPower = new NeonPower(dw, NeonData, makeColor(255, 131, 193, 255));
+    neonPowerArr = [
+      new NeonPower(
+        dw,
+        NeonData,
+        makeColor(20, 147, 255, 0.85),
+        { x: 50, y: 50 },
+        13,
+        true
+      ),
+      new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
+    ];
 
     //All UI setup
     setupUI();
@@ -131,7 +143,7 @@ import {
     document.querySelector("#fsButton").onclick = function() {
       requestFullscreen(canvas);
     };
-    // Image effect toggles    
+    // Image effect toggles
     document.querySelector("#tint").addEventListener("change", e => {
       tintRed = e.target.checked;
     });
@@ -151,12 +163,13 @@ import {
     document.querySelector("#scaleSlider").addEventListener("input", e => {
       scale = e.target.value;
     });
-    document.querySelector("#brightnessSlider").addEventListener("input", e => {});
+    document
+      .querySelector("#brightnessSlider")
+      .addEventListener("input", e => {});
     // Audio effect sliders
     document.querySelector("#delaySlider").addEventListener("input", e => {
       AudioManager.delayNode.delayTime.value = e.target.value;
-    });    
-
+    });
   };
 
   //do 60 times a second
@@ -189,7 +202,12 @@ import {
     }
     let j = 0;
     for (let item of bdSpriteArray) {
-      item.update(1 + highFreq[j] / 96, 1 + highFreq[j] / 96);
+      item.update(
+        1 + highFreq[j] / 96,
+        1 + highFreq[j] / 96,
+        canvas.width / 2,
+        canvas.height / 2
+      );
       j++;
     }
 
@@ -217,6 +235,15 @@ import {
     dw.fillColor(makeColor(0, 0, 101));
     dw.restore();
 
+    for (let neonMem of neonPowerArr) {
+      dw.save();
+      neonMem.update(data);
+      dw.translate(canvas.width / 2 - 370, canvas.height / 2 - 350);
+      dw.scale(1.9, 1.7);
+      neonMem.render();
+      dw.restore();
+    }
+
     //wings draw
     dw.save();
     dw.translate(canvas.width / 2 + 90, canvas.height / 2 + 50);
@@ -233,10 +260,14 @@ import {
 
     //animate flames
     dw.save();
-    dw.translate(canvas.width / 2 - 70, canvas.height / 2 - 110);
+    dw.translate(
+      canvas.width / 2 - (imgData[1].width * 1.5) / 10 + 30,
+      canvas.height / 2 - (imgData[1].height * 1.5) / 10 - 150
+    );
+    dw.scale(1.5, 1.5);
     flames[0].update();
     flames[0].render();
-    dw.translate(140, 0);
+    dw.translate(120, 0);
     dw.scale(-1, 1);
     flames[1].update();
     flames[1].render();
@@ -254,11 +285,6 @@ import {
     vortexEyes[1].render();
     dw.restore();
 
-    dw.save();
-    dw.translate(380, 100);
-    neonPower.update(data);
-    neonPower.render();
-    dw.restore();
     //image effects
     manipulatePixels();
   }
@@ -268,10 +294,10 @@ import {
     let count = 0;
     for (let vert of FlapData) {
       count++;
-      if (count < 60) dw.toVertex(vert[0], vert[1] - data[count] / 3);
+      if (count < 60) dw.toVertex(vert[0], vert[1] - data[count] / 2);
       else if (count > 59 && count < 80)
-        dw.toVertex(vert[0] + data[count] / 10, vert[1] + data[count] / 2);
-      else dw.toVertex(vert[0] - data[count] / 5, vert[1]);
+        dw.toVertex(vert[0] + data[count] / 3, vert[1] + data[count] / 2);
+      else dw.toVertex(vert[0] - data[count] / 2, vert[1]);
     }
     dw.close();
   };
@@ -284,11 +310,11 @@ import {
       if (count < 5 || count > 75) {
         dw.toVertex(vert[0], vert[1]);
       } else if (count > 35 && count < 50) {
-        dw.toVertex(vert[0] + data[count] / 3, vert[1] + data[count] / 5);
+        dw.toVertex(vert[0] + data[count] / 2, vert[1] + data[count] / 3);
       } else if (count > 60 && count <= 75) {
-        dw.toVertex(vert[0] + data[count] / 5, vert[1] + data[count]);
+        dw.toVertex(vert[0] + data[count] / 4, vert[1] + data[count]);
       } else {
-        dw.toVertex(vert[0] + data[count] / 3, vert[1] - data[count] / 5);
+        dw.toVertex(vert[0] + data[count] / 2, vert[1] - data[count] / 4);
       }
     }
     dw.close();
@@ -341,7 +367,7 @@ import {
   window.addEventListener("load", () => {
     loadManager.LoadImages(
       [
-        "./images/background_crop.jpg",
+        "./images/background_crop_png.png",
         "./images/flames.png",
         "./images/vortex.jpg"
       ],
@@ -352,6 +378,5 @@ import {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     bdAlpha = 1.0;
-    soundEff.play();
   });
 })();
