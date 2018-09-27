@@ -26,11 +26,11 @@ import {
   const NUM_SAMPLES = 256;
   //Canvas vars
   let canvas, ctx;
-  let scale = 1; // scale modifier for wings
+  let wingScale = 1, flapScale = 1; // scale modifier for wings and flaps
   let brightness = 0; // brightness modifier
   // Img effect bools
-  let invert, tintRed, lines, noise, bInvert, crazy;
-  invert = tintRed = lines = noise = bInvert = crazy = false;
+  let invert, tintRed, neon, noise, bInvert, crazy;
+  invert = tintRed = neon = noise = bInvert = crazy = false;
   let time, adjustment, data; // data will hold the audio array
   time = adjustment = data = 0;
   //BloodSplatData
@@ -128,7 +128,7 @@ import {
       new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
     ];
 
-    AudioManager.playStream("./media/infamousTrack.mp3");
+    AudioManager.selectStream("./media/infamousTrack.mp3");
 
     //All UI setup
     setupUI();
@@ -149,8 +149,8 @@ import {
     document.querySelector("#tint").addEventListener("change", e => {
       tintRed = e.target.checked;
     });
-    document.querySelector("#lines").addEventListener("change", e => {
-      lines = e.target.checked;
+    document.querySelector("#neon").addEventListener("change", e => {
+      neon = e.target.checked;
     });
     document.querySelector("#crazy").addEventListener("change", e => {
       crazy = e.target.checked;
@@ -162,8 +162,11 @@ import {
       invert = e.target.checked;
     });
     // Image effect sliders
-    document.querySelector("#scaleSlider").addEventListener("input", e => {
-      scale = e.target.value;
+    document.querySelector("#wingScaleSlider").addEventListener("input", e => {
+      wingScale = e.target.value;
+    });
+    document.querySelector("#flapScaleSlider").addEventListener("input", e => {
+      flapScale = e.target.value;
     });
     document
       .querySelector("#brightnessSlider")
@@ -237,13 +240,15 @@ import {
     dw.fillColor(makeColor(0, 0, 101));
     dw.restore();
 
-    for (let neonMem of neonPowerArr) {
-      dw.save();
-      neonMem.update(data);
-      dw.translate(canvas.width / 2 - 370, canvas.height / 2 - 350);
-      dw.scale(1.9, 1.7);
-      neonMem.render();
-      dw.restore();
+    if(neon){
+      for (let neonMem of neonPowerArr) {
+        dw.save();
+        neonMem.update(data);
+        dw.translate(canvas.width / 2 - 370, canvas.height / 2 - 350);
+        dw.scale(1.9, 1.7);
+        neonMem.render();
+        dw.restore();
+      }
     }
 
     //wings draw
@@ -296,10 +301,10 @@ import {
     let count = 0;
     for (let vert of FlapData) {
       count++;
-      if (count < 60) dw.toVertex(vert[0], vert[1] - data[count] / 2);
+      if (count < 60) dw.toVertex(vert[0] * flapScale, vert[1] - data[count] / 2 * flapScale);
       else if (count > 59 && count < 80)
-        dw.toVertex(vert[0] + data[count] / 3, vert[1] + data[count] / 2);
-      else dw.toVertex(vert[0] - data[count] / 2, vert[1]);
+        dw.toVertex(vert[0] + data[count] / 3 * flapScale, vert[1] + data[count] / 2 * flapScale);
+      else dw.toVertex(vert[0] - data[count] / 2 * flapScale, vert[1] * flapScale);
     }
     dw.close();
   };
@@ -310,13 +315,13 @@ import {
     for (let vert of WingData) {
       count++;
       if (count < 5 || count > 75) {
-        dw.toVertex(vert[0], vert[1]);
+        dw.toVertex(vert[0] * wingScale, vert[1] * wingScale);
       } else if (count > 35 && count < 50) {
-        dw.toVertex(vert[0] + data[count] / 2, vert[1] + data[count] / 3);
+        dw.toVertex(vert[0] + data[count] / 2 * wingScale, vert[1] + data[count] / 3 * wingScale);
       } else if (count > 60 && count <= 75) {
-        dw.toVertex(vert[0] + data[count] / 4, vert[1] + data[count]);
+        dw.toVertex(vert[0] + data[count] / 4 * wingScale, vert[1] + data[count] * wingScale);
       } else {
-        dw.toVertex(vert[0] + data[count] / 2, vert[1] - data[count] / 4);
+        dw.toVertex(vert[0] + data[count] / 2 * wingScale, vert[1] - data[count] / 4 * wingScale);
       }
     }
     dw.close();
@@ -351,7 +356,8 @@ import {
       if (noise && Math.floor(Math.random() * 500) < 2) {
         data[i] = data[i + 1] = data[i + 2] = 255;
       }
-      if (lines) {
+
+      /*if (lines) {
         let row = Math.floor(i / 4 / width);
         if (row % 50 == 0) {
           data[i] = data[i + 1] = data[i + 2] = data[i + 3] = 255;
@@ -359,7 +365,7 @@ import {
             i + width * 4 + 2
           ] = data[i + width * 4 + 3] = 255;
         }
-      }
+      }*/
     }
     ctx.putImageData(imageData, 0, 0);
   };
