@@ -12,6 +12,15 @@ import {
   setupCanvasData
 } from "./util.js";
 
+/*
+* TODO:
+* - Take wave form data and get average
+* - Add side bars (use sidebar.js for that)
+* - Add audio api from last.fm
+* - Gradients?
+* - Lightning?
+*/
+
 (function() {
   "use strict";
   //image Preloader
@@ -26,7 +35,8 @@ import {
   const NUM_SAMPLES = 256;
   //Canvas vars
   let canvas, ctx;
-  let wingScale = 1, flapScale = 1; // scale modifier for wings and flaps
+  let wingScale = 1,
+    flapScale = 1; // scale modifier for wings and flaps
   let brightness = 0; // brightness modifier
   // Img effect bools
   let invert, tintRed, neon, noise, bInvert, crazy;
@@ -75,8 +85,8 @@ import {
       NUM_SAMPLES,
       0
     );
-    //AudioManager.playStream("./media/infamousTrack.mp3");
-    AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
+    AudioManager.playStream("./media/infamousTrack.mp3");
+    //AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
 
     flames = [
       new SpriteSheet({
@@ -128,7 +138,7 @@ import {
       new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
     ];
 
-    AudioManager.selectStream("./media/infamousTrack.mp3");
+    // AudioManager.selectStream("./media/infamousTrack.mp3");
 
     //All UI setup
     setupUI();
@@ -240,7 +250,8 @@ import {
     dw.fillColor(makeColor(0, 0, 101));
     dw.restore();
 
-    if(neon){
+    //activate neon effect here
+    if (neon) {
       for (let neonMem of neonPowerArr) {
         dw.save();
         neonMem.update(data);
@@ -301,10 +312,21 @@ import {
     let count = 0;
     for (let vert of FlapData) {
       count++;
-      if (count < 60) dw.toVertex(vert[0] * flapScale, vert[1] - data[count] / 2 * flapScale);
+      if (count < 60)
+        dw.toVertex(
+          vert[0] * flapScale,
+          vert[1] - (data[count] / 2) * flapScale
+        );
       else if (count > 59 && count < 80)
-        dw.toVertex(vert[0] + data[count] / 3 * flapScale, vert[1] + data[count] / 2 * flapScale);
-      else dw.toVertex(vert[0] - data[count] / 2 * flapScale, vert[1] * flapScale);
+        dw.toVertex(
+          vert[0] + (data[count] / 3) * flapScale,
+          vert[1] + (data[count] / 2) * flapScale
+        );
+      else
+        dw.toVertex(
+          vert[0] - (data[count] / 2) * flapScale,
+          vert[1] * flapScale
+        );
     }
     dw.close();
   };
@@ -317,11 +339,20 @@ import {
       if (count < 5 || count > 75) {
         dw.toVertex(vert[0] * wingScale, vert[1] * wingScale);
       } else if (count > 35 && count < 50) {
-        dw.toVertex(vert[0] + data[count] / 2 * wingScale, vert[1] + data[count] / 3 * wingScale);
+        dw.toVertex(
+          vert[0] + (data[count] / 2) * wingScale,
+          vert[1] + (data[count] / 3) * wingScale
+        );
       } else if (count > 60 && count <= 75) {
-        dw.toVertex(vert[0] + data[count] / 4 * wingScale, vert[1] + data[count] * wingScale);
+        dw.toVertex(
+          vert[0] + (data[count] / 4) * wingScale,
+          vert[1] + data[count] * wingScale
+        );
       } else {
-        dw.toVertex(vert[0] + data[count] / 2 * wingScale, vert[1] - data[count] / 4 * wingScale);
+        dw.toVertex(
+          vert[0] + (data[count] / 2) * wingScale,
+          vert[1] - (data[count] / 4) * wingScale
+        );
       }
     }
     dw.close();
@@ -331,7 +362,7 @@ import {
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
     let length = data.length;
-    let width = imageData.width;
+    //let width = imageData.width;
 
     for (let i = 0; i < length; i += 4) {
       if (adjustment > 0) {
