@@ -26,15 +26,15 @@ import {
   const NUM_SAMPLES = 256;
   //Canvas vars
   let canvas, ctx;
-  //Img effect togglers
-  let invert, tintRed, lines, noise, BadTV, bInvert;
-  invert = tintRed = lines = noise = BadTV = bInvert = false;
-
+  let scale = 1; // scale modifier for wings
+  let brightness = 0; // brightness modifier
+  // Img effect bools
+  let invert, tintRed, lines, noise, bInvert, crazy;
+  invert = tintRed = lines = noise = bInvert = crazy = false;
   let time, adjustment, data; // data will hold the audio array
   time = adjustment = data = 0;
   //BloodSplatData
   let bdSpriteArray = [];
-
   let bdAlpha = 0.35; //background alpha
 
   //bullSounds
@@ -70,9 +70,11 @@ import {
     AudioManager = new Audio(
       document.querySelector("audio"),
       new (window.AudioContext || window.webkitAudioContext)(),
-      NUM_SAMPLES
+      NUM_SAMPLES,
+      0
     );
-    AudioManager.playStream("./media/infamousTrack.mp3");
+    //AudioManager.playStream("./media/infamousTrack.mp3");    
+    AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
 
     flames = [
       new SpriteSheet({
@@ -120,33 +122,41 @@ import {
     update();
   }
 
+  // Connects DOM events
   let setupUI = () => {
+    // Miscellaneous toggles
     document.querySelector("#trackSelect").onchange = function(e) {
       AudioManager.playStream(e.target.value);
     };
     document.querySelector("#fsButton").onclick = function() {
       requestFullscreen(canvas);
     };
-    document.querySelector("#RadiusSlider").addEventListener("input", e => {
-      maxRadius = e.target.value;
-    });
+    // Image effect toggles    
     document.querySelector("#tint").addEventListener("change", e => {
       tintRed = e.target.checked;
     });
     document.querySelector("#lines").addEventListener("change", e => {
       lines = e.target.checked;
     });
-    document.querySelector("#crazy").addEventListener("change", e => {});
+    document.querySelector("#crazy").addEventListener("change", e => {
+      crazy = e.target.checked;
+    });
     document.querySelector("#noise").addEventListener("change", e => {
       noise = e.target.checked;
     });
     document.querySelector("#invert").addEventListener("change", e => {
       invert = e.target.checked;
     });
-    document.querySelector("#BadTV").addEventListener("change", e => {});
-    document.querySelector("#TVSlider").addEventListener("input", e => {});
-    document.querySelector("#delay").addEventListener("input", e => {});
-    document.querySelector("#Brightness").addEventListener("input", e => {});
+    // Image effect sliders
+    document.querySelector("#scaleSlider").addEventListener("input", e => {
+      scale = e.target.value;
+    });
+    document.querySelector("#brightnessSlider").addEventListener("input", e => {});
+    // Audio effect sliders
+    document.querySelector("#delaySlider").addEventListener("input", e => {
+      AudioManager.delayNode.delayTime.value = e.target.value;
+    });    
+
   };
 
   //do 60 times a second
@@ -291,9 +301,6 @@ import {
     let width = imageData.width;
 
     for (let i = 0; i < length; i += 4) {
-      if (BadTV) {
-      }
-
       if (adjustment > 0) {
         let brChange = adjustment;
         data[i] += Math.floor(brChange);
