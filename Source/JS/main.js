@@ -128,6 +128,8 @@ import {
       new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
     ];
 
+    AudioManager.playStream("./media/infamousTrack.mp3");
+
     //All UI setup
     setupUI();
     // start animation loop
