@@ -24,4 +24,13 @@ let setupCanvasData = (canvas, width, height) => {
   return canvas.getContext("2d");
 };
 
-export { makeColor, clearScreen, requestFullscreen, setupCanvasData };
+let getRandomColor = () => {
+  const getByte = _ => 55 + Math.round(Math.random() * 200); 
+  let values = new Array(3);
+  values[0] = getByte();
+  values[1] = getByte();
+  values[2] = getByte();
+  return values; 
+}
+
+export { makeColor, clearScreen, requestFullscreen, setupCanvasData, getRandomColor };

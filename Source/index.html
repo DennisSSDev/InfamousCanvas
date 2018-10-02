@@ -22,11 +22,24 @@
             <div id="controls">
                 <div id="selectors">
                     <div id="checkboxes">
-                        <p><input type="checkbox" name="tintRed" value="tintRed" id="tint"> Red Filter </p>
-                        <p><input type="checkbox" name="neon" value="neon" id="neon"> Neon </p>
-                        <p><input type="checkbox" name="crazy" value="crazy" id="crazy"> Crazy Lines </p>
-                        <p><input type="checkbox" name="noise" value="noise" id="noise"> Static </p>
+                        <p><input type="checkbox" name="tintRed" value="tintRed" id="tint"> Random Color Filter </p>
                         <p><input type="checkbox" name="invert" value="invert" id="invert"> Invert Colors </p>
+                        <p><input type="checkbox" name="neon" value="neon" id="neon"> Neon </p>
+                        <p><input type="checkbox" name="noise" value="noise" id="noise"> Static </p>
+                    </div>
+                    <div id="">
+                        <label> Eye Color:
+                            <select id="colorSelect">
+                                <!--<option value="random" selected>Random</option>-->
+                                <option value="red">Red</option>
+                                <option value="green" selected>Green</option>
+                                <option value="blue">Blue</option>
+                                <option value="yellow">Yellow</option>
+                                <!--<option value="orange">Orange</option>
+                                <option value="purple">Purple</option>
+                                <option value="white">White</option>-->
+                            </select>
+                        </label>
                     </div>
                     <div id="sliders">
                         <p> Wing Scale </p>
@@ -34,7 +47,7 @@
                         <p> Flap Scale </p>
                         <p> <input type="range" min="1" max="2" step="0.1" value="1" id="flapScaleSlider"> </p>
                         <p> Brightness </p>
-                        <p> <input type="range" min="0" max="100" step="5" value="0" id="brightnessSlider"> </p>
+                        <p> <input type="range" min="1" max="2" step="0.25" value="1" id="brightnessSlider"> </p>
                         <p> Sound Delay </p>
                         <p> <input type="range" min="0.0" max="1.0" step="0.1" value="0.0" id="delaySlider"> </p>
                     </div>

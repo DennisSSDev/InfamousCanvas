@@ -9,7 +9,8 @@ import {
   makeColor,
   clearScreen,
   requestFullscreen,
-  setupCanvasData
+  setupCanvasData,
+  getRandomColor
 } from "./util.js";
 
 (function() {
@@ -27,10 +28,12 @@ import {
   //Canvas vars
   let canvas, ctx;
   let wingScale = 1, flapScale = 1; // scale modifier for wings and flaps
-  let brightness = 0; // brightness modifier
+  let brightness = 1; // brightness modifier
+  let frameCount = 0;
+  let eyeColor = "cycle"; // color of filter applied to eyes
   // Img effect bools
-  let invert, tintRed, neon, noise, bInvert, crazy;
-  invert = tintRed = neon = noise = bInvert = crazy = false;
+  let invert, tintRed, neon, noise, bInvert;
+  invert = tintRed = neon = noise = bInvert = false;
   let time, adjustment, data; // data will hold the audio array
   time = adjustment = data = 0;
   //BloodSplatData
@@ -138,9 +141,12 @@ import {
 
   // Connects DOM events
   let setupUI = () => {
-    // Miscellaneous toggles
+    // Miscellaneous
     document.querySelector("#trackSelect").onchange = function(e) {
       AudioManager.playStream(e.target.value);
+    };
+    document.querySelector("#colorSelect").onchange = function(e) {
+      eyeColor = e.target.value;
     };
     document.querySelector("#fsButton").onclick = function() {
       requestFullscreen(canvas);
@@ -151,9 +157,6 @@ import {
     });
     document.querySelector("#neon").addEventListener("change", e => {
       neon = e.target.checked;
-    });
-    document.querySelector("#crazy").addEventListener("change", e => {
-      crazy = e.target.checked;
     });
     document.querySelector("#noise").addEventListener("change", e => {
       noise = e.target.checked;
@@ -168,9 +171,9 @@ import {
     document.querySelector("#flapScaleSlider").addEventListener("input", e => {
       flapScale = e.target.value;
     });
-    document
-      .querySelector("#brightnessSlider")
-      .addEventListener("input", e => {});
+    document.querySelector("#brightnessSlider").addEventListener("input", e => {
+      brightness = e.target.value;
+    });
     // Audio effect sliders
     document.querySelector("#delaySlider").addEventListener("input", e => {
       AudioManager.delayNode.delayTime.value = e.target.value;
@@ -280,7 +283,7 @@ import {
     flames[1].render();
     dw.restore();
 
-    //animate vortex
+    //animate vortex eyes
     dw.save();
     dw.translate(canvas.width / 2 - 75, canvas.height / 2 - 120);
     dw.scale(0.4, 0.4);
@@ -292,8 +295,15 @@ import {
     vortexEyes[1].render();
     dw.restore();
 
-    //image effects
-    manipulatePixels();
+    frameCount += 1;
+
+    if(frameCount % 2 == 0){
+      manipulatePixels(true);
+      frameCount = 0;
+    }
+    else{manipulatePixels();}
+
+    manipulateEyes();
   }
 
   let drawFlap = () => {
@@ -327,7 +337,7 @@ import {
     dw.close();
   };
 
-  let manipulatePixels = () => {
+  let manipulatePixels = (brightness=false) => {
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
     let length = data.length;
@@ -357,6 +367,16 @@ import {
         data[i] = data[i + 1] = data[i + 2] = 255;
       }
 
+      if(brightness){
+        // Apply brightness adjustment
+        data[i] += brightness;
+        if(data[i] > 255) {data[i] = 255};
+        data[i + 1] += brightness;
+        if(data[i+1] > 255) {data[i+1] = 255};
+        data[i + 2] += brightness;
+        if(data[i+2] > 255) {data[i+2] = 255};
+      }
+
       /*if (lines) {
         let row = Math.floor(i / 4 / width);
         if (row % 50 == 0) {
@@ -366,8 +386,61 @@ import {
           ] = data[i + width * 4 + 3] = 255;
         }
       }*/
+      
     }
     ctx.putImageData(imageData, 0, 0);
+  };
+
+  // Used to apply a color filter to the skull's eyes
+  let manipulateEyes = () => {
+    // Get image data (from the same eye because it's easier)
+    let leftEye = ctx.getImageData(canvas.width / 2 - 74, canvas.height / 2 - 120, 34, 34);
+    let rightEye = ctx.getImageData(canvas.width / 2 + 44, canvas.height / 2 - 120, 34, 34);
+
+    let leftData = leftEye.data;
+    let leftLength = leftData.length;
+    
+    let rightData = rightEye.data;
+    
+    let colors = getRandomColor();
+
+    for (let i = 0; i < leftLength; i += 4) {
+      switch(eyeColor){
+        // if() in each case checks to prevent black pixels from being changed
+        case "random":  
+          if(leftData[i] >= 10) leftData[i] = colors[0];
+          if(rightData[i] >= 10) rightData[i] = colors[0];
+          if(leftData[i+1] >= 10) leftData[i+1] = colors[1];
+          if(rightData[i+1] >= 10) rightData[i+1] = colors[1];
+          if(leftData[i+2] >= 10) leftData[i+2] = colors[2];
+          if(rightData[i+2] >= 10) rightData[i+2] = colors[2];
+          break;
+        case "red":
+          if(leftData[i] >= 10) leftData[i] = 255;
+          if(rightData[i] >= 10) rightData[i] = 255;
+          break;
+        case "green":
+          break;
+        case "blue":
+          if(leftData[i+2] >= 10) leftData[i+2] = 255;
+          if(rightData[i+2] >= 10) rightData[i+2] = 255;
+          break;
+        case "yellow":
+          if(leftData[i] >= 10) leftData[i] = 255;
+          if(rightData[i] >= 10) rightData[i] = 255;
+          if(leftData[i+1] >= 10) leftData[i+1] = 255;
+          if(rightData[i+1] >= 10) rightData[i+1] = 255;
+          if(leftData[i+2] >= 10) leftData[i+2] = 0;
+          if(rightData[i+2] >= 10) rightData[i+2] = 0;
+          break;
+      } 
+    }
+
+    //ctx.putImageData(leftEye, canvas.width / 2 - 75, canvas.height / 2 - 120);
+    //ctx.putImageData(rightEye, canvas.width / 2 + 305, canvas.height / 2 - 120);
+
+    ctx.putImageData(leftEye, canvas.width / 2 - 74, canvas.height / 2 - 120);
+    ctx.putImageData(rightEye, canvas.width / 2 + 44, canvas.height / 2 - 120);
   };
 
   //window events.
