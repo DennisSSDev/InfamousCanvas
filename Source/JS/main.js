@@ -5,6 +5,7 @@ import BloodSprite from "./JS_Sprites/blood.js";
 import { WingData, FlapData, NeonData } from "./JS_Sprites/wingData.js";
 import SpriteSheet from "./JS_Sprites/SpriteSheet.js";
 import NeonPower from "./JS_Sprites/neonPower.js";
+import Lightning from "./JS_Sprites/lightning.js";
 import {
   makeColor,
   clearScreen,
@@ -12,6 +13,15 @@ import {
   setupCanvasData,
   getRandomColor
 } from "./util.js";
+
+/*
+* TODO:
+* - Take wave form data and get average
+* - Add side bars (use sidebar.js for that)
+* - Add audio api from last.fm
+* - Gradients?
+* - Lightning?
+*/
 
 (function() {
   "use strict";
@@ -34,8 +44,9 @@ import {
   // Img effect bools
   let invert, tintRed, neon, noise, bInvert;
   invert = tintRed = neon = noise = bInvert = false;
-  let time, adjustment, data; // data will hold the audio array
-  time = adjustment = data = 0;
+  let time, adjustment, data, waveData; // data will hold the audio array
+  time = adjustment = data = waveData = 0;
+
   //BloodSplatData
   let bdSpriteArray = [];
   let bdAlpha = 0.35; //background alpha
@@ -48,7 +59,7 @@ import {
   let vortexEyes = [];
 
   let neonPowerArr = [];
-
+  let lightning = [];
   //Serves as the main entrance point
   function init(data) {
     //grab the preloaded images
@@ -78,8 +89,8 @@ import {
       NUM_SAMPLES,
       0
     );
-    //AudioManager.playStream("./media/infamousTrack.mp3");
-    AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
+    AudioManager.playStream("./media/infamousTrack.mp3");
+    //AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
 
     flames = [
       new SpriteSheet({
@@ -103,20 +114,37 @@ import {
     vortexEyes = [
       new SpriteSheet({
         context: ctx,
-        width: 1362,
-        height: 100,
+        width: 1324,
+        height: 90,
         image: imgData[2],
         ticksPerFrame: 1,
         numberOfFrames: 16
       }),
       new SpriteSheet({
         context: ctx,
-        width: 1362,
-        height: 100,
+        width: 1324,
+        height: 90,
         image: imgData[2],
         ticksPerFrame: 1,
         numberOfFrames: 16
       })
+    ];
+    lightning = [
+      new Lightning(
+        new SpriteSheet({
+          context: ctx,
+          width: 1510,
+          height: 332,
+          image: imgData[3],
+          ticksPerFrame: 2.5,
+          numberOfFrames: 11
+        }),
+        2000,
+        3,
+        300,
+        300,
+        dw
+      )
     ];
 
     neonPowerArr = [
@@ -131,7 +159,7 @@ import {
       new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
     ];
 
-    AudioManager.selectStream("./media/infamousTrack.mp3");
+    // AudioManager.selectStream("./media/infamousTrack.mp3");
 
     //All UI setup
     setupUI();
@@ -190,10 +218,16 @@ import {
     */
     // create a new array of 8-bit integers (0-255)
     data = new Uint8Array(NUM_SAMPLES / 2);
-
+    waveData = new Uint8Array(NUM_SAMPLES / 2);
     AudioManager.analyserNode.getByteFrequencyData(data);
+    AudioManager.analyserNode.getByteTimeDomainData(waveData);
     //analyserNode.getByteTimeDomainData(data);
-
+    let dataLength = data.length;
+    let total = 0;
+    for (let mem of data) {
+      total += mem;
+    }
+    let average = total / dataLength;
     clearScreen(ctx);
 
     //background draw
@@ -219,6 +253,21 @@ import {
       j++;
     }
 
+    //animate vortex
+    dw.save();
+    dw.translate(
+      canvas.width / 2 - 90 + average / 2.5,
+      canvas.height / 2 - 125 + average / 15
+    );
+    dw.scale(0.65 - average / 300, 0.65 - average / 300);
+    vortexEyes[0].update();
+    vortexEyes[0].render();
+    dw.translate(285, 0);
+    dw.scale(-1, 1);
+    vortexEyes[1].update();
+    vortexEyes[1].render();
+    dw.restore();
+
     //skullhead draw
     dw.save();
     dw.translate(
@@ -243,7 +292,8 @@ import {
     dw.fillColor(makeColor(0, 0, 101));
     dw.restore();
 
-    if(neon){
+    //activate neon effect here
+    if (neon) {
       for (let neonMem of neonPowerArr) {
         dw.save();
         neonMem.update(data);
@@ -271,13 +321,15 @@ import {
     //animate flames
     dw.save();
     dw.translate(
-      canvas.width / 2 - (imgData[1].width * 1.5) / 10 + 30,
-      canvas.height / 2 - (imgData[1].height * 1.5) / 10 - 150
+      canvas.width / 2 - (imgData[1].width * 1.5) / 10 + 60,
+      canvas.height / 2 - (imgData[1].height * 1.5) / 10 - 70 - average
     );
-    dw.scale(1.5, 1.5);
+
+    dw.scale(0.9, 0.7 + average / 100);
+
     flames[0].update();
     flames[0].render();
-    dw.translate(120, 0);
+    dw.translate(135, 0);
     dw.scale(-1, 1);
     flames[1].update();
     flames[1].render();
@@ -296,7 +348,7 @@ import {
     dw.restore();
 
     frameCount += 1;
-
+    //image effects
     if(frameCount % 2 == 0){
       manipulatePixels(true);
       frameCount = 0;
@@ -304,6 +356,10 @@ import {
     else{manipulatePixels();}
 
     manipulateEyes();
+
+    lightning[0].update();
+    lightning[0].render();
+    
   }
 
   let drawFlap = () => {
@@ -311,10 +367,21 @@ import {
     let count = 0;
     for (let vert of FlapData) {
       count++;
-      if (count < 60) dw.toVertex(vert[0] * flapScale, vert[1] - data[count] / 2 * flapScale);
+      if (count < 60)
+        dw.toVertex(
+          vert[0] * flapScale,
+          vert[1] - (data[count] / 2) * flapScale
+        );
       else if (count > 59 && count < 80)
-        dw.toVertex(vert[0] + data[count] / 3 * flapScale, vert[1] + data[count] / 2 * flapScale);
-      else dw.toVertex(vert[0] - data[count] / 2 * flapScale, vert[1] * flapScale);
+        dw.toVertex(
+          vert[0] + (data[count] / 3) * flapScale,
+          vert[1] + (data[count] / 2) * flapScale
+        );
+      else
+        dw.toVertex(
+          vert[0] - (data[count] / 2) * flapScale,
+          vert[1] * flapScale
+        );
     }
     dw.close();
   };
@@ -327,11 +394,20 @@ import {
       if (count < 5 || count > 75) {
         dw.toVertex(vert[0] * wingScale, vert[1] * wingScale);
       } else if (count > 35 && count < 50) {
-        dw.toVertex(vert[0] + data[count] / 2 * wingScale, vert[1] + data[count] / 3 * wingScale);
+        dw.toVertex(
+          vert[0] + (data[count] / 2) * wingScale,
+          vert[1] + (data[count] / 3) * wingScale
+        );
       } else if (count > 60 && count <= 75) {
-        dw.toVertex(vert[0] + data[count] / 4 * wingScale, vert[1] + data[count] * wingScale);
+        dw.toVertex(
+          vert[0] + (data[count] / 4) * wingScale,
+          vert[1] + data[count] * wingScale
+        );
       } else {
-        dw.toVertex(vert[0] + data[count] / 2 * wingScale, vert[1] - data[count] / 4 * wingScale);
+        dw.toVertex(
+          vert[0] + (data[count] / 2) * wingScale,
+          vert[1] - (data[count] / 4) * wingScale
+        );
       }
     }
     dw.close();
@@ -341,7 +417,7 @@ import {
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
     let length = data.length;
-    let width = imageData.width;
+    //let width = imageData.width;
 
     for (let i = 0; i < length; i += 4) {
       if (adjustment > 0) {
@@ -450,7 +526,8 @@ import {
       [
         "./images/background_crop_png.png",
         "./images/flames.png",
-        "./images/vortex.jpg"
+        "./images/vortex.png",
+        "./images/lightning2.png"
       ],
       init
     );
