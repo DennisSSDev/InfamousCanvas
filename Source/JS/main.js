@@ -41,8 +41,8 @@ import {
   // Img effect bools
   let invert, tintRed, neon, noise, bInvert, crazy;
   invert = tintRed = neon = noise = bInvert = crazy = false;
-  let time, adjustment, data; // data will hold the audio array
-  time = adjustment = data = 0;
+  let time, adjustment, data, waveData; // data will hold the audio array
+  time = adjustment = data = waveData = 0;
   //BloodSplatData
   let bdSpriteArray = [];
   let bdAlpha = 0.35; //background alpha
@@ -110,16 +110,16 @@ import {
     vortexEyes = [
       new SpriteSheet({
         context: ctx,
-        width: 1362,
-        height: 100,
+        width: 1324,
+        height: 90,
         image: imgData[2],
         ticksPerFrame: 1,
         numberOfFrames: 16
       }),
       new SpriteSheet({
         context: ctx,
-        width: 1362,
-        height: 100,
+        width: 1324,
+        height: 90,
         image: imgData[2],
         ticksPerFrame: 1,
         numberOfFrames: 16
@@ -197,10 +197,16 @@ import {
     */
     // create a new array of 8-bit integers (0-255)
     data = new Uint8Array(NUM_SAMPLES / 2);
-
+    waveData = new Uint8Array(NUM_SAMPLES / 2);
     AudioManager.analyserNode.getByteFrequencyData(data);
+    AudioManager.analyserNode.getByteTimeDomainData(waveData);
     //analyserNode.getByteTimeDomainData(data);
-
+    let dataLength = data.length;
+    let total = 0;
+    for (let mem of data) {
+      total += mem;
+    }
+    let average = total / dataLength;
     clearScreen(ctx);
 
     //background draw
@@ -225,6 +231,21 @@ import {
       );
       j++;
     }
+
+    //animate vortex
+    dw.save();
+    dw.translate(
+      canvas.width / 2 - 90 + average / 2.5,
+      canvas.height / 2 - 125 + average / 15
+    );
+    dw.scale(0.65 - average / 300, 0.65 - average / 300);
+    vortexEyes[0].update();
+    vortexEyes[0].render();
+    dw.translate(285, 0);
+    dw.scale(-1, 1);
+    vortexEyes[1].update();
+    vortexEyes[1].render();
+    dw.restore();
 
     //skullhead draw
     dw.save();
@@ -279,28 +300,18 @@ import {
     //animate flames
     dw.save();
     dw.translate(
-      canvas.width / 2 - (imgData[1].width * 1.5) / 10 + 30,
-      canvas.height / 2 - (imgData[1].height * 1.5) / 10 - 150
+      canvas.width / 2 - (imgData[1].width * 1.5) / 10 + 60,
+      canvas.height / 2 - (imgData[1].height * 1.5) / 10 - 70 - average
     );
-    dw.scale(1.5, 1.5);
+
+    dw.scale(0.9, 0.7 + average / 100);
+
     flames[0].update();
     flames[0].render();
-    dw.translate(120, 0);
+    dw.translate(135, 0);
     dw.scale(-1, 1);
     flames[1].update();
     flames[1].render();
-    dw.restore();
-
-    //animate vortex
-    dw.save();
-    dw.translate(canvas.width / 2 - 75, canvas.height / 2 - 120);
-    dw.scale(0.4, 0.4);
-    vortexEyes[0].update();
-    vortexEyes[0].render();
-    dw.translate(380, 0);
-    dw.scale(-1, 1);
-    vortexEyes[1].update();
-    vortexEyes[1].render();
     dw.restore();
 
     //image effects
@@ -408,7 +419,7 @@ import {
       [
         "./images/background_crop_png.png",
         "./images/flames.png",
-        "./images/vortex.jpg"
+        "./images/vortex.png"
       ],
       init
     );

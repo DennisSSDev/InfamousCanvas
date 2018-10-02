@@ -16,6 +16,7 @@ export default class BloodSprite {
     this.alpha = Math.random();
     this.alpha < 0.5 ? this.queueDeath() : this.queueLife();
     this.delay = Math.floor(Math.random() * 100 + 50);
+    this.greenTint = 0;
   }
   set Xpos(x) {
     this.x = x;
@@ -40,7 +41,8 @@ export default class BloodSprite {
         this.canvasX + Math.random() * (this.canvasX - 200) * inversion;
       this.Ypos =
         this.canvasY + Math.random() * (this.canvasY - 100) * inversion2;
-      this.blueTint = Math.random() * 80;
+      this.blueTint = Math.random() * 100;
+      this.greenTint = Math.random() * 50;
       this.queueLife();
     }
   }
@@ -64,7 +66,9 @@ export default class BloodSprite {
     this.drawObj.open();
     this.drawObj.ellipse(0, 0, this.radX, this.radY, 0, 0, 2 * Math.PI);
     this.drawObj.close();
-    this.drawObj.fillColor(makeColor(30, 0, this.blueTint, this.alpha));
+    this.drawObj.fillColor(
+      makeColor(30, this.greenTint, this.blueTint + 75, this.alpha + 0.25)
+    );
     this.drawObj.restore();
   }
 }

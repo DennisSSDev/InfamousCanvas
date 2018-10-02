@@ -156,7 +156,7 @@ const WingData = [
   [-120, 400]
 ];
 
-let NeonData = [
+const NeonData = [
   [70, 65, 85, 85],
   [105, 60, 95, 30],
   [120, 60, 150, 80],
