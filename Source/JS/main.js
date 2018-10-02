@@ -5,6 +5,7 @@ import BloodSprite from "./JS_Sprites/blood.js";
 import { WingData, FlapData, NeonData } from "./JS_Sprites/wingData.js";
 import SpriteSheet from "./JS_Sprites/SpriteSheet.js";
 import NeonPower from "./JS_Sprites/neonPower.js";
+import Lightning from "./JS_Sprites/lightning.js";
 import {
   makeColor,
   clearScreen,
@@ -55,7 +56,7 @@ import {
   let vortexEyes = [];
 
   let neonPowerArr = [];
-
+  let lightning = [];
   //Serves as the main entrance point
   function init(data) {
     //grab the preloaded images
@@ -124,6 +125,23 @@ import {
         ticksPerFrame: 1,
         numberOfFrames: 16
       })
+    ];
+    lightning = [
+      new Lightning(
+        new SpriteSheet({
+          context: ctx,
+          width: 1510,
+          height: 332,
+          image: imgData[3],
+          ticksPerFrame: 2.5,
+          numberOfFrames: 11
+        }),
+        2000,
+        3,
+        300,
+        300,
+        dw
+      )
     ];
 
     neonPowerArr = [
@@ -314,6 +332,8 @@ import {
     flames[1].render();
     dw.restore();
 
+    lightning[0].update();
+    lightning[0].render();
     //image effects
     manipulatePixels();
   }
@@ -419,7 +439,8 @@ import {
       [
         "./images/background_crop_png.png",
         "./images/flames.png",
-        "./images/vortex.png"
+        "./images/vortex.png",
+        "./images/lightning2.png"
       ],
       init
     );
