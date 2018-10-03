@@ -19,8 +19,8 @@ export default class Draw {
   translate(x = 0, y = 0) {
     this.ctx.translate(x, y);
   }
-  rotate(x, y) {
-    this.ctx.rotate(x, y);
+  rotate(degrees = 0) {
+    this.ctx.rotate((degrees * Math.PI) / 180);
   }
   newL(x = 0, y = 0) {
     this.ctx.beginPath();
