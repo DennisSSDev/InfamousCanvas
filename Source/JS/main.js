@@ -90,7 +90,7 @@ import {
       NUM_SAMPLES,
       0
     );
-    AudioManager.playStream("./media/infamousTrack.mp3");
+    // AudioManager.playStream("./media/infamousTrack.mp3");
     //AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
 
     flames = [
@@ -130,10 +130,11 @@ import {
         numberOfFrames: 16
       })
     ];
-    let selection = false;
-    for (let i = 0; i < 6; i++) {
+    let selection = 0;
+    for (let i = 0; i < 10; i++) {
       let nwLightning;
-      if (!selection) {
+      selection = Math.random() * 4;
+      if (selection < 1) {
         nwLightning = new Lightning(
           new SpriteSheet({
             context: ctx,
@@ -145,34 +146,79 @@ import {
           }),
           2000,
           3,
-          300,
-          300,
           dw,
           1.5,
           1.5,
           i
         );
-        selection = true;
+      } else if (selection >= 1 && selection < 2) {
+        nwLightning = new Lightning(
+          new SpriteSheet({
+            context: ctx,
+            width: 1500,
+            height: 303,
+            image: imgData[4],
+            ticksPerFrame: 3,
+            numberOfFrames: 11
+          }),
+          1500,
+          3,
+          dw,
+          0.4,
+          0.4,
+          i
+        );
+      } else if (selection >= 2 && selection < 3) {
+        nwLightning = new Lightning(
+          new SpriteSheet({
+            context: ctx,
+            width: 1500,
+            height: 303,
+            image: imgData[5],
+            ticksPerFrame: 3,
+            numberOfFrames: 11
+          }),
+          1500,
+          3,
+          dw,
+          0.4,
+          0.4,
+          i
+        );
+      } else if (selection >= 3 && selection < 4) {
+        nwLightning = new Lightning(
+          new SpriteSheet({
+            context: ctx,
+            width: 1500,
+            height: 303,
+            image: imgData[6],
+            ticksPerFrame: 3,
+            numberOfFrames: 11
+          }),
+          1500,
+          3,
+          dw,
+          0.4,
+          0.4,
+          i
+        );
       } else {
         nwLightning = new Lightning(
           new SpriteSheet({
             context: ctx,
-            width: 1024,
-            height: 512,
-            image: imgData[4],
-            ticksPerFrame: 1,
-            numberOfFrames: 8
+            width: 1500,
+            height: 303,
+            image: imgData[5],
+            ticksPerFrame: 3,
+            numberOfFrames: 11
           }),
-          2000,
+          1500,
           3,
-          300,
-          300,
           dw,
           0.4,
           0.4,
           i
         );
-        selection = false;
       }
       lightning.push(nwLightning);
     }
@@ -388,11 +434,13 @@ import {
 
     manipulateEyes();
 
+    let index = 0;
     for (let lightmem of lightning) {
       lightmem.xOff = canvas.width / 2;
       lightmem.yOff = canvas.height / 2;
-      lightmem.update();
+      lightmem.update(-waveData[index] / 3, waveData[index + 1] / 6);
       lightmem.render();
+      index++;
     }
   }
 
@@ -524,7 +572,6 @@ import {
 
     let leftData = leftEye.data;
     let leftLength = leftData.length;
-
     let rightData = rightEye.data;
 
     let colors = getRandomColor();
@@ -577,8 +624,9 @@ import {
         "./images/flames.png",
         "./images/vortex.png",
         "./images/lightning1.png",
-        "./images/lightning3.png",
-        "./images/lightning4.png"
+        "./images/lightning2.png",
+        "./images/lightning4.png",
+        "./images/lightning6.png"
       ],
       init
     );
