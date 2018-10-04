@@ -55,17 +55,18 @@ input[type="checkbox"] {
   position: relative;
   margin-right: auto;
   margin-left: 5%;
-  border: 4px solid rgb(128, 0, 0);
 }
 
 #selectors {
   color: white;
   position: relative;
+  border: 4px solid rgb(128, 0, 0);
 
   padding: 20px;
   width: 200px;
   background: rgb(105, 105, 105);
   border-radius: 5px;
+  visibility: visible;
 }
 
 #checkboxes {
@@ -90,6 +91,12 @@ input[type="checkbox"] {
   margin-right: 10%;
 }
 
+#minMax{
+  border: 4px solid rgb(128, 0, 0);
+  margin-bottom: 5%;
+  padding: 10px;
+}
+
 #sliders {
   width: 250px;
   display: flex;
@@ -107,6 +114,7 @@ input[type="checkbox"] {
   padding-top: 20px;
   text-align: left;
 }
+
 label {
   font-size: 20px;
   line-height: 25px;

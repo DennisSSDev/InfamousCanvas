@@ -36,22 +36,24 @@ import {
   let canvas, ctx;
   let wingScale = 1, flapScale = 1; // scale modifier for wings and flaps
   //let brightness = 1; // brightness modifier
-  let frameCount = 0;
-  let eyeColor = "green"; // color of filter applied to eyes
+  //let frameCount = 0;
   // Img effect bools
-  let invert, tintRed, neon, noise, bInvert;
-  invert = tintRed = neon = noise = bInvert = false;
+  let invert, randomFilter, neon, noise, bInvert;
+  invert = randomFilter = neon = noise = bInvert = false;
   let time, adjustment, data, waveData; // data will hold the audio array
   time = adjustment = data = waveData = 0;
 
   //BloodSplatData
   let bdSpriteArray = [];
   let bdAlpha = 0.35; //background alpha
-
+  // Color for random filter
+  let randomFilterColor = getRandomColor();
   //flame sprites
   let flames = [];
   //vortex Eyes
   let vortexEyes = [];
+  let eyeColor = "green"; // color of filter applied to eyes
+  let randomEyeColor = getRandomColor();
 
   let neonPowerArr = [];
   let lightning = [];
@@ -238,7 +240,7 @@ import {
     //All UI setup
     setupUI();
     // start animation loop
-    update();
+    update(0);
   }
   function createGradientWithCurves(AudioData) {
 
@@ -265,6 +267,7 @@ import {
 
   // Connects DOM events
   let setupUI = () => {
+    document.querySelector("#selectors").style.visibility = "visible";
     // Miscellaneous
     document.querySelector("#trackSelect").onchange = function(e) {
       AudioManager.playStream(e.target.value);
@@ -275,9 +278,20 @@ import {
     document.querySelector("#fsButton").onclick = function() {
       requestFullscreen(canvas);
     };
+    document.querySelector("#minMax").onclick = function() {
+      let selectors = document.querySelector("#selectors");
+      
+      if(selectors.style.visibility == "visible"){
+        selectors.style.visibility = "hidden";
+      }else{
+        selectors.style.visibility = "visible";
+      }
+    };
     // Image effect toggles
-    document.querySelector("#tint").addEventListener("change", e => {
-      tintRed = e.target.checked;
+    document.querySelector("#filter").addEventListener("change", e => {
+      randomFilter = e.target.checked;
+      // Do this to prevent an obvious box from appearing around the eyes
+      document.querySelector('#colorSelect [value="green"]').selected = true;
     });
     document.querySelector("#neon").addEventListener("change", e => {
       neon = e.target.checked;
@@ -305,8 +319,14 @@ import {
   };
 
   //do 60 times a second
+<<<<<<< HEAD
   function update() {
     requestAnimationFrame(update);
+=======
+  function update(frameCount_) {
+    requestAnimationFrame(() =>(update(frameCount_)));
+    
+>>>>>>> 6d1822eecddd1717f946e899884b7ac6902293e1
     AudioManager.analyserNode.getByteFrequencyData(data);
     AudioManager.analyserNode.getByteTimeDomainData(waveData);
     let dataLength = data.length;
@@ -425,16 +445,21 @@ import {
     vortexEyes[1].render();
     dw.restore();
 
-    frameCount += 1;
-    //image effects
-    if (frameCount > 120) {
-      manipulatePixels(true);
-      frameCount = 0;
+    
+
+    // Change colors every 2 seconds
+    if (frameCount_ > 60) {
+      randomEyeColor = getRandomColor();
+      randomFilterColor = getRandomColor();
+      frameCount_ = 0;
     } else {
-      manipulatePixels();
+      // Increment number of frames
+      frameCount_ += 1;
     }
 
-    manipulateEyes();
+    //image effects
+    manipulatePixels(randomFilterColor);
+    manipulateEyes(randomEyeColor);
 
     //Lightning should not be affected by image effects
     let index = 0;
@@ -501,7 +526,7 @@ import {
     dw.close();
   };
 
-  let manipulatePixels = (brightness = false) => {
+  let manipulatePixels = (colors) => {
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
     let length = data.length;
@@ -514,10 +539,14 @@ import {
         data[i + 1] += Math.floor(brChange);
         data[i + 2] += Math.floor(brChange);
       }
-
-      if (tintRed) {
-        data[i] = data[i] + 100;
+      // Random color filter
+      if (randomFilter) {
+        eyeColor = "green"; // Do this to prevent an obvious box from appearing around the eyes
+        data[i] += colors[0];
+        data[i + 1] += colors[1];
+        data[i + 2] += colors[2];
       }
+      // Inverted color filter
       if (invert) {
         let red = data[i],
           green = data[i + 1],
@@ -527,6 +556,7 @@ import {
         data[i + 1] = 255 - green;
         data[i + 2] = 255 - blue;
       }
+      // Static noise filter
       if (noise && Math.floor(Math.random() * 500) < 2) {
         data[i] = data[i + 1] = data[i + 2] = 255;
       }
@@ -553,7 +583,7 @@ import {
   };
 
   // Used to apply a color filter to the skull's eyes
-  let manipulateEyes = () => {
+  let manipulateEyes = (colors) => {
     // Get image data (from the same eye because it's easier)
     let leftEye = ctx.getImageData(canvas.width / 2 - 74,canvas.height / 2 - 120,34,34);
     let rightEye = ctx.getImageData(canvas.width / 2 + 44,canvas.height / 2 - 120,34,34);
@@ -561,8 +591,6 @@ import {
     let leftData = leftEye.data;
     let leftLength = leftData.length;
     let rightData = rightEye.data;
-
-    let colors = getRandomColor();
 
     for (let i = 0; i < leftLength; i += 4) {
       switch (eyeColor) {
