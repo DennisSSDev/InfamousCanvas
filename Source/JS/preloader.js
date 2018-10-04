@@ -1,4 +1,3 @@
-"use strict";
 export default class Preloader {
   constructor() {
     this.totalImages = [];

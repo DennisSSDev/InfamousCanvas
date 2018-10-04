@@ -1,5 +1,4 @@
 //lighting strips that appear at random
-"use strict";
 export default class Lightning {
   //request a sprite sheet
   //have a death and alive state to mitigate instantiation

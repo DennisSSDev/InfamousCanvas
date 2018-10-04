@@ -3,7 +3,6 @@
 //Play bull sound on activation
 
 //draw fire at two locations (nostrols)
-"use strict";
 export default class SpriteSheet {
   constructor(
     options = {

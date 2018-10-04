@@ -1,4 +1,3 @@
-"use strict";
 let makeColor = (red, green, blue, alpha = 1.0) => {
   let color = "rgba(" + red + "," + green + "," + blue + ", " + alpha + ")";
   return color;
@@ -25,12 +24,18 @@ let setupCanvasData = (canvas, width, height) => {
 };
 
 let getRandomColor = () => {
-  const getByte = _ => 55 + Math.round(Math.random() * 200); 
+  const getByte = _ => 55 + Math.round(Math.random() * 200);
   let values = new Array(3);
   values[0] = getByte();
   values[1] = getByte();
   values[2] = getByte();
-  return values; 
-}
+  return values;
+};
 
-export { makeColor, clearScreen, requestFullscreen, setupCanvasData, getRandomColor };
+export {
+  makeColor,
+  clearScreen,
+  requestFullscreen,
+  setupCanvasData,
+  getRandomColor
+};

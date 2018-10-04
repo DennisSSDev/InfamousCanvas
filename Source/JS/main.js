@@ -6,6 +6,7 @@ import { WingData, FlapData, NeonData } from "./JS_Sprites/wingData.js";
 import SpriteSheet from "./JS_Sprites/SpriteSheet.js";
 import NeonPower from "./JS_Sprites/neonPower.js";
 import Lightning from "./JS_Sprites/lightning.js";
+import SideBar from "./JS_Sprites/sidebar.js";
 import {
   makeColor,
   clearScreen,
@@ -16,15 +17,12 @@ import {
 
 /*
 * TODO:
-* - Take wave form data and get average
 * - Add side bars (use sidebar.js for that)
 * - Add audio api from last.fm
 * - Gradients?
-* - Lightning?
 */
 
 (function() {
-  "use strict";
   //image Preloader
   const loadManager = new Preloader();
 
@@ -61,6 +59,8 @@ import {
 
   let neonPowerArr = [];
   let lightning = [];
+  let sideBar;
+  let sideBar2;
   //Serves as the main entrance point
   function init(data) {
     //grab the preloaded images
@@ -235,6 +235,8 @@ import {
       new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
     ];
 
+    sideBar = new SideBar(0, 7, 2, dw);
+    sideBar2 = new SideBar(canvas.width, 7, 2, dw);
     // AudioManager.selectStream("./media/infamousTrack.mp3");
 
     //All UI setup
@@ -297,7 +299,6 @@ import {
     waveData = new Uint8Array(NUM_SAMPLES / 2);
     AudioManager.analyserNode.getByteFrequencyData(data);
     AudioManager.analyserNode.getByteTimeDomainData(waveData);
-    //analyserNode.getByteTimeDomainData(data);
     let dataLength = data.length;
     let total = 0;
     for (let mem of data) {
@@ -328,6 +329,9 @@ import {
       );
       j++;
     }
+
+    sideBar.update(100, 50, false, highFreq);
+    sideBar2.update(100, 50, true, highFreq);
 
     //animate vortex
     dw.save();
@@ -434,6 +438,7 @@ import {
 
     manipulateEyes();
 
+    //Lightning should not be affected by image effects
     let index = 0;
     for (let lightmem of lightning) {
       lightmem.xOff = canvas.width / 2;

@@ -1,4 +1,3 @@
-"use strict";
 export default class Audio {
   constructor(audioElement, audioCtx, NUM_SAMPLES) {
     this.delayNode = undefined;
@@ -42,8 +41,7 @@ export default class Audio {
     if (this.delayNode != undefined) {
       sourceNode.connect(this.delayNode);
       this.delayNode.connect(analyserNode);
-    }
-    else{
+    } else {
       sourceNode.connect(analyserNode);
     }
     // here we connect to the destination i.e. speakers
