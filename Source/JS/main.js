@@ -59,9 +59,9 @@ import {
   let sideBar;
   let sideBar2;
   //Serves as the main entrance point
-  function init(data) {
+  function init(data_) {
     //grab the preloaded images
-    imgData = data;
+    imgData = data_;
 
     //canvas init
     canvas = document.querySelector("canvas");
@@ -228,10 +228,13 @@ import {
       ),
       new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
     ];
-
+  // create a new array of 8-bit integers (0-255)
     sideBar = new SideBar(0, 7, 2, dw);
     sideBar2 = new SideBar(canvas.width, 7, 2, dw);
     // AudioManager.selectStream("./media/infamousTrack.mp3");
+
+    data = new Uint8Array(NUM_SAMPLES / 2);
+    waveData = new Uint8Array(NUM_SAMPLES / 2);
 
     //All UI setup
     setupUI();
@@ -283,14 +286,7 @@ import {
   //do 60 times a second
   function update() {
     requestAnimationFrame(update);
-    /*
-        Nyquist Theorem
-        http://whatis.techtarget.com/definition/Nyquist-Theorem
-        The array of data we get back is 1/2 the size of the sample rate 
-    */
-    // create a new array of 8-bit integers (0-255)
-    data = new Uint8Array(NUM_SAMPLES / 2);
-    waveData = new Uint8Array(NUM_SAMPLES / 2);
+    
     AudioManager.analyserNode.getByteFrequencyData(data);
     AudioManager.analyserNode.getByteTimeDomainData(waveData);
     let dataLength = data.length;
@@ -313,6 +309,10 @@ import {
     for (let i = 0; i < 30; i++) {
       highFreq[i] = data[i + 20];
     }
+
+    sideBar.update(50,5,false,highFreq);
+    sideBar2.update(50,5,true, highFreq);
+
     let j = 0;
     for (let item of bdSpriteArray) {
       item.update(
