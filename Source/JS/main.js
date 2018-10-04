@@ -39,15 +39,16 @@ import {
   //let brightness = 1; // brightness modifier
   //let frameCount = 0;
   // Img effect bools
-  let invert, tintRed, neon, noise, bInvert;
-  invert = tintRed = neon = noise = bInvert = false;
+  let invert, randomFilter, neon, noise, bInvert;
+  invert = randomFilter = neon = noise = bInvert = false;
   let time, adjustment, data, waveData; // data will hold the audio array
   time = adjustment = data = waveData = 0;
 
   //BloodSplatData
   let bdSpriteArray = [];
   let bdAlpha = 0.35; //background alpha
-
+  // Color for random filter
+  let randomFilterColor = getRandomColor();
   //flame sprites
   let flames = [];
   //vortex Eyes
@@ -245,6 +246,7 @@ import {
 
   // Connects DOM events
   let setupUI = () => {
+    document.querySelector("#selectors").style.visibility = "visible";
     // Miscellaneous
     document.querySelector("#trackSelect").onchange = function(e) {
       AudioManager.playStream(e.target.value);
@@ -255,9 +257,20 @@ import {
     document.querySelector("#fsButton").onclick = function() {
       requestFullscreen(canvas);
     };
+    document.querySelector("#minMax").onclick = function() {
+      let selectors = document.querySelector("#selectors");
+      
+      if(selectors.style.visibility == "visible"){
+        selectors.style.visibility = "hidden";
+      }else{
+        selectors.style.visibility = "visible";
+      }
+    };
     // Image effect toggles
-    document.querySelector("#tint").addEventListener("change", e => {
-      tintRed = e.target.checked;
+    document.querySelector("#filter").addEventListener("change", e => {
+      randomFilter = e.target.checked;
+      // Do this to prevent an obvious box from appearing around the eyes
+      document.querySelector('#colorSelect [value="green"]').selected = true;
     });
     document.querySelector("#neon").addEventListener("change", e => {
       neon = e.target.checked;
@@ -408,7 +421,8 @@ import {
 
     // Change colors every 2 seconds
     if (frameCount_ > 60) {
-      randomEyeColor = getRandomColor()
+      randomEyeColor = getRandomColor();
+      randomFilterColor = getRandomColor();
       frameCount_ = 0;
     } else {
       // Increment number of frames
@@ -416,7 +430,7 @@ import {
     }
 
     //image effects
-    manipulatePixels();
+    manipulatePixels(randomFilterColor);
     manipulateEyes(randomEyeColor);
 
     //Lightning should not be affected by image effects
@@ -484,7 +498,7 @@ import {
     dw.close();
   };
 
-  let manipulatePixels = () => {
+  let manipulatePixels = (colors) => {
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
     let length = data.length;
@@ -497,10 +511,14 @@ import {
         data[i + 1] += Math.floor(brChange);
         data[i + 2] += Math.floor(brChange);
       }
-
-      if (tintRed) {
-        data[i] = data[i] + 100;
+      // Random color filter
+      if (randomFilter) {
+        eyeColor = "green"; // Do this to prevent an obvious box from appearing around the eyes
+        data[i] += colors[0];
+        data[i + 1] += colors[1];
+        data[i + 2] += colors[2];
       }
+      // Inverted color filter
       if (invert) {
         let red = data[i],
           green = data[i + 1],
@@ -510,6 +528,7 @@ import {
         data[i + 1] = 255 - green;
         data[i + 2] = 255 - blue;
       }
+      // Static noise filter
       if (noise && Math.floor(Math.random() * 500) < 2) {
         data[i] = data[i + 1] = data[i + 2] = 255;
       }
