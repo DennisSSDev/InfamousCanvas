@@ -50,8 +50,6 @@ import {
   let bdSpriteArray = [];
   let bdAlpha = 0.35; //background alpha
 
-  //bullSounds
-  let soundEff;
   //flame sprites
   let flames = [];
   //vortex Eyes
@@ -65,10 +63,6 @@ import {
   function init(data) {
     //grab the preloaded images
     imgData = data;
-
-    soundEff = document.createElement("audio");
-    soundEff.volume = 0.4;
-    soundEff.src = "./media/bull.mp3";
 
     //canvas init
     canvas = document.querySelector("canvas");
