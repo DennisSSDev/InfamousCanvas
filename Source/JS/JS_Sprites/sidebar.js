@@ -45,6 +45,14 @@ export default class SideBar {
 
       this.drawRef.save();
       this.drawRef.fillColor(makeColor(255, 0, 0, 1));
+      //Too expensive
+      // this.drawRef.fillColor(
+      //   this.drawRef.createGradient(0, 100, 0, 200, [
+      //     [0, "red"],
+      //     [0.5, "blue"],
+      //     [1, "pink"]
+      //   ])
+      // );
       this.drawRef.close();
       this.offsetY += 25;
     }

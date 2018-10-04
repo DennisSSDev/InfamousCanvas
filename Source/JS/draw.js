@@ -51,6 +51,13 @@ export default class Draw {
     this.ctx.strokeStyle = rgba;
     this.ctx.stroke();
   }
+  createGradient(xOrigin = 0, yOrigin = 0, xEnd = 5000, yEnd = 0, arrOfStop) {
+    let gradient = this.ctx.createLinearGradient(xOrigin, yOrigin, xEnd, yEnd);
+    for (let dataMem of arrOfStop) {
+      gradient.addColorStop(dataMem[0], dataMem[1]);
+    }
+    return gradient;
+  }
   get context() {
     return this.ctx;
   }

@@ -324,8 +324,8 @@ import {
       j++;
     }
 
-    sideBar.update(100, 50, false, highFreq);
-    sideBar2.update(100, 50, true, highFreq);
+    sideBar.update(20, 29, false, highFreq);
+    sideBar2.update(20, 29, true, highFreq);
 
     //animate vortex
     dw.save();
