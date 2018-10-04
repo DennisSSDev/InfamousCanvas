@@ -37,11 +37,10 @@ import {
   const NUM_SAMPLES = 256;
   //Canvas vars
   let canvas, ctx;
-  let wingScale = 1,
-    flapScale = 1; // scale modifier for wings and flaps
-  let brightness = 1; // brightness modifier
+  let wingScale = 1, flapScale = 1; // scale modifier for wings and flaps
+  //let brightness = 1; // brightness modifier
   let frameCount = 0;
-  let eyeColor = "cycle"; // color of filter applied to eyes
+  let eyeColor = "green"; // color of filter applied to eyes
   // Img effect bools
   let invert, tintRed, neon, noise, bInvert;
   invert = tintRed = neon = noise = bInvert = false;
@@ -88,10 +87,10 @@ import {
       document.querySelector("audio"),
       new (window.AudioContext || window.webkitAudioContext)(),
       NUM_SAMPLES,
-      0
+      1      
     );
     // AudioManager.playStream("./media/infamousTrack.mp3");
-    //AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
+    AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
 
     flames = [
       new SpriteSheet({
@@ -130,6 +129,7 @@ import {
         numberOfFrames: 16
       })
     ];
+
     let selection = 0;
     for (let i = 0; i < 10; i++) {
       let nwLightning;
@@ -275,8 +275,8 @@ import {
     document.querySelector("#flapScaleSlider").addEventListener("input", e => {
       flapScale = e.target.value;
     });
-    document.querySelector("#brightnessSlider").addEventListener("input", e => {
-      brightness = e.target.value;
+    document.querySelector("#bassSlider").addEventListener("input", e => {
+      AudioManager.bassScale = e.target.value;
     });
     // Audio effect sliders
     document.querySelector("#delaySlider").addEventListener("input", e => {
@@ -328,21 +328,6 @@ import {
       );
       j++;
     }
-
-    //animate vortex
-    dw.save();
-    dw.translate(
-      canvas.width / 2 - 90 + average / 2.5,
-      canvas.height / 2 - 125 + average / 15
-    );
-    dw.scale(0.65 - average / 300, 0.65 - average / 300);
-    vortexEyes[0].update();
-    vortexEyes[0].render();
-    dw.translate(285, 0);
-    dw.scale(-1, 1);
-    vortexEyes[1].update();
-    vortexEyes[1].render();
-    dw.restore();
 
     //skullhead draw
     dw.save();
@@ -425,7 +410,7 @@ import {
 
     frameCount += 1;
     //image effects
-    if (frameCount % 2 == 0) {
+    if (frameCount > 120) {
       manipulatePixels(true);
       frameCount = 0;
     } else {
@@ -442,6 +427,9 @@ import {
       lightmem.render();
       index++;
     }
+
+    // AUDIO
+    AudioManager.updateAudio();
   }
 
   let drawFlap = () => {
@@ -525,31 +513,23 @@ import {
         data[i] = data[i + 1] = data[i + 2] = 255;
       }
 
-      if (brightness) {
-        // Apply brightness adjustment
-        data[i] += brightness;
-        if (data[i] > 255) {
-          data[i] = 255;
-        }
-        data[i + 1] += brightness;
-        if (data[i + 1] > 255) {
-          data[i + 1] = 255;
-        }
-        data[i + 2] += brightness;
-        if (data[i + 2] > 255) {
-          data[i + 2] = 255;
-        }
-      }
+      // Brightness adjustment not working
+      // if (brightness) {
+      //   // Apply brightness adjustment
+      //   data[i] += brightness;
+      //   if (data[i] > 255) {
+      //     data[i] = 255;
+      //   }
+      //   data[i + 1] += brightness;
+      //   if (data[i + 1] > 255) {
+      //     data[i + 1] = 255;
+      //   }
+      //   data[i + 2] += brightness;
+      //   if (data[i + 2] > 255) {
+      //     data[i + 2] = 255;
+      //   }
+      // }
 
-      /*if (lines) {
-        let row = Math.floor(i / 4 / width);
-        if (row % 50 == 0) {
-          data[i] = data[i + 1] = data[i + 2] = data[i + 3] = 255;
-          data[i + width * 4] = data[i + width * 4 + 1] = data[
-            i + width * 4 + 2
-          ] = data[i + width * 4 + 3] = 255;
-        }
-      }*/
     }
     ctx.putImageData(imageData, 0, 0);
   };
@@ -557,18 +537,8 @@ import {
   // Used to apply a color filter to the skull's eyes
   let manipulateEyes = () => {
     // Get image data (from the same eye because it's easier)
-    let leftEye = ctx.getImageData(
-      canvas.width / 2 - 74,
-      canvas.height / 2 - 120,
-      34,
-      34
-    );
-    let rightEye = ctx.getImageData(
-      canvas.width / 2 + 44,
-      canvas.height / 2 - 120,
-      34,
-      34
-    );
+    let leftEye = ctx.getImageData(canvas.width / 2 - 74,canvas.height / 2 - 120,34,34);
+    let rightEye = ctx.getImageData(canvas.width / 2 + 44,canvas.height / 2 - 120,34,34);
 
     let leftData = leftEye.data;
     let leftLength = leftData.length;
@@ -580,16 +550,20 @@ import {
       switch (eyeColor) {
         // if() in each case checks to prevent black pixels from being changed
         case "random":
-          if (leftData[i] >= 10) leftData[i] = colors[0];
-          if (rightData[i] >= 10) rightData[i] = colors[0];
-          if (leftData[i + 1] >= 10) leftData[i + 1] = colors[1];
-          if (rightData[i + 1] >= 10) rightData[i + 1] = colors[1];
-          if (leftData[i + 2] >= 10) leftData[i + 2] = colors[2];
-          if (rightData[i + 2] >= 10) rightData[i + 2] = colors[2];
+          if (leftData[i] >= 12) leftData[i] = colors[0];
+          if (rightData[i] >= 12) rightData[i] = colors[0];
+          if (leftData[i + 1] >= 12) leftData[i + 1] = colors[1];
+          if (rightData[i + 1] >= 12) rightData[i + 1] = colors[1];
+          if (leftData[i + 2] >= 12) leftData[i + 2] = colors[2];
+          if (rightData[i + 2] >= 12) rightData[i + 2] = colors[2];
           break;
         case "red":
-          if (leftData[i] >= 10) leftData[i] = 255;
-          if (rightData[i] >= 10) rightData[i] = 255;
+          if (leftData[i] >= 20) leftData[i] = 255;
+          if (rightData[i] >= 20) rightData[i] = 255;
+           leftData[i + 1] = 0;
+           rightData[i + 1] = 0;
+           leftData[i + 2] = 0;
+           rightData[i + 2] = 0;
           break;
         case "green":
           break;
@@ -598,12 +572,12 @@ import {
           if (rightData[i + 2] >= 10) rightData[i + 2] = 255;
           break;
         case "yellow":
-          if (leftData[i] >= 10) leftData[i] = 255;
-          if (rightData[i] >= 10) rightData[i] = 255;
-          if (leftData[i + 1] >= 10) leftData[i + 1] = 255;
-          if (rightData[i + 1] >= 10) rightData[i + 1] = 255;
-          if (leftData[i + 2] >= 10) leftData[i + 2] = 0;
-          if (rightData[i + 2] >= 10) rightData[i + 2] = 0;
+          if (leftData[i] >= 20) leftData[i] = 255;
+          if (rightData[i] >= 20) rightData[i] = 255;
+          if (leftData[i + 1] >= 100) leftData[i + 1] = 255;
+          if (rightData[i + 1] >= 100) rightData[i + 1] = 255;
+          if (leftData[i + 2] >= 0) leftData[i + 2] = 0;
+          if (rightData[i + 2] >= 0) rightData[i + 2] = 0;
           break;
       }
     }

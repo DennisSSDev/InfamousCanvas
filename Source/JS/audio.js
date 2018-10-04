@@ -1,7 +1,9 @@
 "use strict";
 export default class Audio {
-  constructor(audioElement, audioCtx, NUM_SAMPLES) {
+  constructor(audioElement, audioCtx, NUM_SAMPLES, bassScale=1) {
     this.delayNode = undefined;
+    this.lowShelfNode = undefined;
+    this.bassScale = bassScale;
     this.delayAmount = 0;
     this.NUM_SAMPLES = NUM_SAMPLES;
     this.audioCtx = audioCtx;
@@ -17,35 +19,37 @@ export default class Audio {
     // create an analyser node
     analyserNode = this.audioCtx.createAnalyser();
 
+    // fft stands for Fast Fourier Transform
+    analyserNode.fftSize = this.NUM_SAMPLES;
+
+    // hook up <audio> element to analyserNode
+    sourceNode = this.audioCtx.createMediaElementSource(audioElement);
+
+    // delay node for reverb effect
     if (this.delayNode == undefined) {
       this.delayNode = this.audioCtx.createDelay();
       this.delayNode.delayTime.value = this.delayAmount;
     }
 
-    /*
-        We will request NUM_SAMPLES number of samples or "bins" spaced equally 
-        across the sound spectrum.
-    
-        If NUM_SAMPLES (fftSize) is 256, then the first bin is 0 Hz, the second is 172 Hz, 
-        the third is 344Hz. Each bin contains a number between 0-255 representing 
-        the amplitude of that frequency.
-    */
+    // Lowshelf node for bass boost
+    if(this.lowShelfNode == undefined){
+      this.lowShelfNode =  this.audioCtx.createBiquadFilter();
+      this.lowShelfNode.type = "lowshelf";
+    }
 
-    // fft stands for Fast Fourier Transform
-    analyserNode.fftSize = this.NUM_SAMPLES;
-
-    // this is where we hook up the <audio> element to the analyserNode
-    //console.log(this.audioCtx);
-    sourceNode = this.audioCtx.createMediaElementSource(audioElement);
     sourceNode.connect(this.audioCtx.destination);
-    //delay node for... Delaying sounds
-    if (this.delayNode != undefined) {
-      sourceNode.connect(this.delayNode);
-      this.delayNode.connect(analyserNode);
-    }
-    else{
-      sourceNode.connect(analyserNode);
-    }
+
+    this.lowShelfNode.connect(this.delayNode);
+    
+    
+    // if (this.delayNode != undefined) {
+    //   sourceNode.connect(this.delayNode);
+    //   this.delayNode.connect(analyserNode);
+    // }
+    // else{
+    //   sourceNode.connect(analyserNode);
+    // }
+    
     // here we connect to the destination i.e. speakers
     analyserNode.connect(this.audioCtx.destination);
     return analyserNode;
@@ -73,4 +77,39 @@ export default class Audio {
     snd.appendChild(src);
     snd.play();
   }
+
+  updateAudio(){
+    this.lowShelfNode.frequency.setValueAtTime(1000, this.audioCtx.currentTime);
+    this.lowShelfNode.gain.setValueAtTime(15 * this.bassScale, this.audioCtx.currentTime);
+  }
 }
+
+// 	this.sourceNode = this.audioCtx.createMediaElementSource(audioElement);
+
+// this.lowShelfNode = this.audioCtx.createBiquadFilter();
+// this.lowShelfNode.type = "lowshelf";
+
+// sourceNode.connect(analyserNode);
+
+// //delay node for... Delaying sounds
+// if (this.delayNode != undefined) {
+//   sourceNode.connect(this.delayNode);
+//   this.delayNode.connect(analyserNode);
+// }
+// else{
+//   sourceNode.connect(analyserNode);
+// }
+
+// // Lowshelf node for bass boost
+// if (this.lowShelfNode != undefined) {
+//   this.delayNode.connect(this.lowShelfNode);
+//   this.lowShelfNode.connect(analyserNode);
+// }
+// else{
+//   this.delayNode.connect(analyserNode);
+// }
+
+// // here we connect to the destination i.e. speakers
+// analyserNode.connect(this.audioCtx.destination);
+// return analyserNode;
+// }
