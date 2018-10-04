@@ -36,7 +36,7 @@ export default class Audio {
       this.lowShelfNode.type = "lowshelf";
     }
 
-    sourceNode.connect(this.audioCtx.destination);
+    sourceNode.connect(this.lowShelfNode);
 
     this.lowShelfNode.connect(this.delayNode);
     
@@ -50,6 +50,7 @@ export default class Audio {
     // }
     
     // here we connect to the destination i.e. speakers
+    this.delayNode.connect(analyserNode);
     analyserNode.connect(this.audioCtx.destination);
     return analyserNode;
   }
