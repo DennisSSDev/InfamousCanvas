@@ -1,4 +1,3 @@
-"use strict";
 export default class Audio {
   constructor(audioElement, audioCtx, NUM_SAMPLES, bassScale=1) {
     this.delayNode = undefined;

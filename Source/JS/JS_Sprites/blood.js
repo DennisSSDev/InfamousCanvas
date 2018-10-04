@@ -1,5 +1,3 @@
-"use strict";
-
 import { makeColor } from "../util.js";
 
 export default class BloodSprite {

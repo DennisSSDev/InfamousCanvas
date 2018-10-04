@@ -1,4 +1,3 @@
-"use strict";
 export default class Draw {
   //needs more code for global compositing
   constructor(ctx) {
@@ -21,6 +20,9 @@ export default class Draw {
   }
   rotate(degrees = 0) {
     this.ctx.rotate((degrees * Math.PI) / 180);
+  }
+  drawRect(x = 0, y = 0, width = 0, height = 0) {
+    this.ctx.rect(x, y, width, height);
   }
   newL(x = 0, y = 0) {
     this.ctx.beginPath();
