@@ -6,7 +6,6 @@ import { WingData, FlapData, NeonData } from "./JS_Sprites/wingData.js";
 import SpriteSheet from "./JS_Sprites/SpriteSheet.js";
 import NeonPower from "./JS_Sprites/neonPower.js";
 import Lightning from "./JS_Sprites/lightning.js";
-import SideBar from "./JS_Sprites/sidebar.js";
 import {
   makeColor,
   clearScreen,
@@ -17,9 +16,9 @@ import {
 
 /*
 * TODO:
-* - Add side bars (use sidebar.js for that)
-* - Add audio api from last.fm
-* - Gradients?
+* - Sidebars need to be cubic beziere
+* - add a dropbox for audio
+* - Gradients
 */
 
 (function() {
@@ -229,8 +228,8 @@ import {
       new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
     ];
   // create a new array of 8-bit integers (0-255)
-    sideBar = new SideBar(0, 7, 2, dw);
-    sideBar2 = new SideBar(canvas.width, 7, 2, dw);
+    // sideBar = new SideBar(0, 7, 2, dw);
+    // sideBar2 = new SideBar(canvas.width, 7, 2, dw);
     // AudioManager.selectStream("./media/infamousTrack.mp3");
 
     data = new Uint8Array(NUM_SAMPLES / 2);
@@ -241,6 +240,28 @@ import {
     // start animation loop
     update();
   }
+  function createGradientWithCurves(AudioData) {
+
+    // Create off-screen canvas and gradient
+    let fogCanvas = document.createElement('canvas');
+    let ctx = fogCanvas.getContext('2d');
+    let grd = ctx.createLinearGradient(0, 5, 100, 800);
+
+    fogCanvas.width = 700;
+    fogCanvas.height = 700;
+
+    grd.addColorStop(0,"red");
+    grd.addColorStop(1,"blue");
+
+    // Fill with gradient
+    ctx.strokeStyle = grd;
+
+    ctx.beginPath();
+    ctx.moveTo(20,20);
+    ctx.bezierCurveTo(20,100,200,100,200,20);
+    ctx.stroke();
+    return fogCanvas;
+}
 
   // Connects DOM events
   let setupUI = () => {
@@ -286,7 +307,6 @@ import {
   //do 60 times a second
   function update() {
     requestAnimationFrame(update);
-    
     AudioManager.analyserNode.getByteFrequencyData(data);
     AudioManager.analyserNode.getByteTimeDomainData(waveData);
     let dataLength = data.length;
@@ -297,6 +317,9 @@ import {
     let average = total / dataLength;
     clearScreen(ctx);
 
+    let obj_cv = createGradientWithCurves();
+
+    dw.drawImg(obj_cv);
     //background draw
     ctx.save();
     ctx.fillStyle = "black";
@@ -310,9 +333,8 @@ import {
       highFreq[i] = data[i + 20];
     }
 
-    sideBar.update(50,5,false,highFreq);
-    sideBar2.update(50,5,true, highFreq);
-
+    // sideBar.update(50,5,false,highFreq);
+    // sideBar2.update(50,5,true, highFreq);
     let j = 0;
     for (let item of bdSpriteArray) {
       item.update(

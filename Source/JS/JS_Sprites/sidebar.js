@@ -8,11 +8,6 @@ export default class SideBar {
     this.drawRef = drawRef;
     this.offsetX = 0;
     this.offsetY = 0;
-    this.gradient_ = this.drawRef.createGradient(0, 100, 0, 200, [
-      [0, "red"],
-      [0.5, "blue"],
-      [1, "pink"]
-    ]);
   }
   update(widthMultiplier = 1, barNumber = 1, invert = false, audioData) {
     this.offsetY = 0;
@@ -50,9 +45,7 @@ export default class SideBar {
 
       this.drawRef.save();
       //Too expensive
-      // this.drawRef.fillColor(
-      //   this.gradient_
-      // );
+      //this.drawRef.createGradient(0, 25, 0, 900);
       this.drawRef.fillColor(makeColor(255, 0, 0, 1));
       this.drawRef.close();
       this.offsetY += 25;

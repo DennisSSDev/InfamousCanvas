@@ -43,13 +43,6 @@ export default class Draw {
   quadCurveTo(cntrP_X = 0, cntrP_Y = 0, x = 0, y = 0) {
     this.ctx.quadraticCurveTo(cntrP_X, cntrP_Y, x, y);
   }
-  createGradient(xOrigin = 0, yOrigin = 0, xEnd = 5000, yEnd = 0, arrOfStop) {
-    let gradient = this.ctx.createLinearGradient(xOrigin, yOrigin, xEnd, yEnd);
-    for (let dataMem of arrOfStop) {
-      gradient.addColorStop(dataMem[0], dataMem[1]);
-    }
-    return gradient;
-  }
   fillColor(rgba = "black") {
     this.ctx.fillStyle = rgba;
     this.ctx.fill();
