@@ -37,8 +37,7 @@ import {
   let canvas, ctx;
   let wingScale = 1, flapScale = 1; // scale modifier for wings and flaps
   //let brightness = 1; // brightness modifier
-  let frameCount = 0;
-  let eyeColor = "green"; // color of filter applied to eyes
+  //let frameCount = 0;
   // Img effect bools
   let invert, tintRed, neon, noise, bInvert;
   invert = tintRed = neon = noise = bInvert = false;
@@ -53,6 +52,8 @@ import {
   let flames = [];
   //vortex Eyes
   let vortexEyes = [];
+  let eyeColor = "green"; // color of filter applied to eyes
+  let randomEyeColor = getRandomColor();
 
   let neonPowerArr = [];
   let lightning = [];
@@ -239,7 +240,7 @@ import {
     //All UI setup
     setupUI();
     // start animation loop
-    update();
+    update(0);
   }
 
   // Connects DOM events
@@ -284,8 +285,8 @@ import {
   };
 
   //do 60 times a second
-  function update() {
-    requestAnimationFrame(update);
+  function update(frameCount_) {
+    requestAnimationFrame(() =>(update(frameCount_)));
     
     AudioManager.analyserNode.getByteFrequencyData(data);
     AudioManager.analyserNode.getByteTimeDomainData(waveData);
@@ -403,16 +404,20 @@ import {
     vortexEyes[1].render();
     dw.restore();
 
-    frameCount += 1;
-    //image effects
-    if (frameCount > 120) {
-      manipulatePixels(true);
-      frameCount = 0;
+    
+
+    // Change colors every 2 seconds
+    if (frameCount_ > 60) {
+      randomEyeColor = getRandomColor()
+      frameCount_ = 0;
     } else {
-      manipulatePixels();
+      // Increment number of frames
+      frameCount_ += 1;
     }
 
-    manipulateEyes();
+    //image effects
+    manipulatePixels();
+    manipulateEyes(randomEyeColor);
 
     //Lightning should not be affected by image effects
     let index = 0;
@@ -479,7 +484,7 @@ import {
     dw.close();
   };
 
-  let manipulatePixels = (brightness = false) => {
+  let manipulatePixels = () => {
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
     let length = data.length;
@@ -531,7 +536,7 @@ import {
   };
 
   // Used to apply a color filter to the skull's eyes
-  let manipulateEyes = () => {
+  let manipulateEyes = (colors) => {
     // Get image data (from the same eye because it's easier)
     let leftEye = ctx.getImageData(canvas.width / 2 - 74,canvas.height / 2 - 120,34,34);
     let rightEye = ctx.getImageData(canvas.width / 2 + 44,canvas.height / 2 - 120,34,34);
@@ -539,8 +544,6 @@ import {
     let leftData = leftEye.data;
     let leftLength = leftData.length;
     let rightData = rightEye.data;
-
-    let colors = getRandomColor();
 
     for (let i = 0; i < leftLength; i += 4) {
       switch (eyeColor) {
