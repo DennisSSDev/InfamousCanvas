@@ -267,6 +267,7 @@ import {
   }
   let createGradientWithCurves = AudioData => {
     // Create off-screen canvas and gradient
+    ctxOff.clearRect(0, 0, 700, 700);
     for (let i = 0; i < 9; i++) {
       ctxOff.beginPath();
       ctxOff.moveTo(10 + i * 70, 0);
@@ -349,7 +350,7 @@ import {
 
     AudioManager.analyserNode.getByteFrequencyData(data);
     AudioManager.analyserNode.getByteTimeDomainData(waveData);
-
+    total = 0;
     for (let mem of data) {
       total += mem;
     }
@@ -487,7 +488,6 @@ import {
       lightmem.render();
       index++;
     }
-
     obj_cv = createGradientWithCurves(waveData);
 
     dw.save();
