@@ -35,15 +35,16 @@ import {
   const NUM_SAMPLES = 256;
   //Canvas vars
   let canvas, ctx;
-  let wingScale = 1, flapScale = 1; // scale modifier for wings and flaps
+  let wingScale = 1,
+    flapScale = 1; // scale modifier for wings and flaps
   //let brightness = 1; // brightness modifier
   //let frameCount = 0;
   // Img effect bools
   let invert, randomFilter, neon, noise, bInvert, sidebars;
   invert = randomFilter = neon = noise = bInvert = false;
   sidebars = true;
-  let time, adjustment, data, waveData; // data will hold the audio array
-  time = adjustment = data = waveData = 0;
+  let adjustment, data, waveData, highFreq; // data will hold the audio array
+  adjustment = data = waveData = 0;
 
   //BloodSplatData
   let bdSpriteArray = [];
@@ -61,6 +62,10 @@ import {
   let lightning = [];
   let sideBar;
   let sideBar2;
+
+  let canvasOff, ctxOff, grd, obj_cv;
+
+  let dataLength, total;
   //Serves as the main entrance point
   function init(data_) {
     //grab the preloaded images
@@ -70,10 +75,24 @@ import {
     canvas = document.querySelector("canvas");
     ctx = setupCanvasData(canvas, window.innerWidth, window.innerHeight);
 
+    canvasOff = document.createElement("canvas");
+    ctxOff = canvasOff.getContext("2d");
+    grd = ctxOff.createLinearGradient(0, 0, 500, 500);
+
+    canvasOff.width = 700;
+    canvasOff.height = 700;
+
+    grd.addColorStop(0, "red");
+    grd.addColorStop(0.5, "blue");
+
+    // Fill with gradient
+    ctxOff.strokeStyle = grd;
+    ctxOff.lineWidth = 6;
+
     //drawer init
     dw = new Draw(ctx);
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 28; i++) {
       bdSpriteArray.push(
         new BloodSprite(canvas.width / 2, canvas.height / 2, dw)
       );
@@ -84,7 +103,7 @@ import {
       document.querySelector("audio"),
       new (window.AudioContext || window.webkitAudioContext)(),
       NUM_SAMPLES,
-      1      
+      1
     );
     // AudioManager.playStream("./media/infamousTrack.mp3");
     AudioManager.selectStream("./media/infamousTrack.mp3"); // Used to prevent autoplay
@@ -128,7 +147,7 @@ import {
     ];
 
     let selection = 0;
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 9; i++) {
       let nwLightning;
       selection = Math.random() * 4;
       if (selection < 1) {
@@ -231,63 +250,60 @@ import {
       ),
       new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
     ];
-  
+
     sideBar = new SideBar(0, 7, 2, dw);
     sideBar2 = new SideBar(canvas.width, 7, 2, dw);
     AudioManager.selectStream("./media/infamousTrack.mp3");
 
     data = new Uint8Array(NUM_SAMPLES / 2);
     waveData = new Uint8Array(NUM_SAMPLES / 2);
-
+    highFreq = new Uint8Array(30);
+    dataLength = data.length;
+    total = 0;
     //All UI setup
     setupUI();
     // start animation loop
     update(0);
   }
-  function createGradientWithCurves(AudioData) {
-
+  let createGradientWithCurves = AudioData => {
     // Create off-screen canvas and gradient
-    let fogCanvas = document.createElement('canvas');
-    let ctx = fogCanvas.getContext('2d');
-    let grd = ctx.createLinearGradient(0, 5, 100, 800);
-
-    fogCanvas.width = 700;
-    fogCanvas.height = 700;
-
-    grd.addColorStop(0,"red");
-    grd.addColorStop(1,"blue");
-
-    // Fill with gradient
-    ctx.strokeStyle = grd;
-
-    ctx.beginPath();
-    ctx.moveTo(20,20);
-    ctx.bezierCurveTo(20,100,200,100,200,20);
-    ctx.stroke();
-    return fogCanvas;
-}
+    for (let i = 0; i < 9; i++) {
+      ctxOff.beginPath();
+      ctxOff.moveTo(10 + i * 70, 0);
+      ctxOff.bezierCurveTo(
+        20 + i * 70 - AudioData[i + 2] / 3,
+        50 + AudioData[i] / 3,
+        100 + i * 70 + AudioData[i + 2] / 3,
+        50 + AudioData[i + 1] / 3,
+        100 + i * 70,
+        -50
+      );
+      ctxOff.stroke();
+    }
+    return canvasOff;
+  };
 
   // Connects DOM events
   let setupUI = () => {
     document.querySelector("#selectors").style.visibility = "visible";
     // Miscellaneous
-    document.querySelector("#trackSelect").onchange = function(e) {
+    document.querySelector("#trackSelect").onchange = e => {
       AudioManager.playStream(e.target.value);
     };
-    document.querySelector("#colorSelect").onchange = function(e) {
+    document.querySelector("#colorSelect").onchange = e => {
       eyeColor = e.target.value;
     };
-    document.querySelector("#fsButton").onclick = function() {
+    document.querySelector("#fsButton").onclick = () => {
       requestFullscreen(canvas);
     };
-    document.querySelector("#minMax").onclick = function() {
+    document.querySelector("#minMax").onclick = () => {
       let selectors = document.querySelector("#selectors");
       let control = document.querySelector("#minMax");
 
-      if(selectors.style.visibility == "visible"){
+      if (selectors.style.visibility == "visible") {
         control.innerHTML = "Show Controls";
         selectors.style.visibility = "hidden";
-      }else{
+      } else {
         control.innerHTML = "Hide Controls";
         selectors.style.visibility = "visible";
       }
@@ -328,22 +344,17 @@ import {
 
   //do 60 times a second
   function update(frameCount_) {
-    requestAnimationFrame(() =>(update(frameCount_)));
-    
+    requestAnimationFrame(() => update(frameCount_));
+    clearScreen(ctx);
+
     AudioManager.analyserNode.getByteFrequencyData(data);
     AudioManager.analyserNode.getByteTimeDomainData(waveData);
 
-    let dataLength = data.length;
-    let total = 0;
     for (let mem of data) {
       total += mem;
     }
     let average = total / dataLength;
-    clearScreen(ctx);
 
-    let obj_cv = createGradientWithCurves();
-
-    dw.drawImg(obj_cv);
     //background draw
     ctx.save();
     ctx.fillStyle = "black";
@@ -352,15 +363,15 @@ import {
     ctx.restore();
 
     //Bubles audio edit
-    let highFreq = new Uint8Array(30);
+
     for (let i = 0; i < 30; i++) {
       highFreq[i] = data[i + 20];
     }
 
     // Sidebar equalizer
-    if(sidebars){
-      sideBar.update(50,5,false,highFreq);
-      sideBar2.update(50,5,true, highFreq);
+    if (sidebars) {
+      sideBar.update(50, 26, false, highFreq);
+      sideBar2.update(50, 26, true, highFreq);
     }
 
     let j = 0;
@@ -451,7 +462,7 @@ import {
     dw.scale(-1, 1);
     vortexEyes[1].update();
     vortexEyes[1].render();
-    dw.restore();    
+    dw.restore();
 
     // Change colors every 2 seconds
     if (frameCount_ > 60) {
@@ -476,6 +487,13 @@ import {
       lightmem.render();
       index++;
     }
+
+    obj_cv = createGradientWithCurves(waveData);
+
+    dw.save();
+    dw.translate(canvas.width / 2 - 330, canvas.height - 100);
+    dw.drawImg(obj_cv);
+    dw.restore();
 
     // AUDIO
     AudioManager.updateAudio();
@@ -532,11 +550,10 @@ import {
     dw.close();
   };
 
-  let manipulatePixels = (colors) => {
+  let manipulatePixels = colors => {
     let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     let data = imageData.data;
     let length = data.length;
-    //let width = imageData.width;
 
     for (let i = 0; i < length; i += 4) {
       if (adjustment > 0) {
@@ -566,33 +583,25 @@ import {
       if (noise && Math.floor(Math.random() * 500) < 2) {
         data[i] = data[i + 1] = data[i + 2] = 255;
       }
-
-      // Brightness adjustment not working
-      // if (brightness) {
-      //   // Apply brightness adjustment
-      //   data[i] += brightness;
-      //   if (data[i] > 255) {
-      //     data[i] = 255;
-      //   }
-      //   data[i + 1] += brightness;
-      //   if (data[i + 1] > 255) {
-      //     data[i + 1] = 255;
-      //   }
-      //   data[i + 2] += brightness;
-      //   if (data[i + 2] > 255) {
-      //     data[i + 2] = 255;
-      //   }
-      // }
-
     }
     ctx.putImageData(imageData, 0, 0);
   };
 
   // Used to apply a color filter to the skull's eyes
-  let manipulateEyes = (colors) => {
+  let manipulateEyes = colors => {
     // Get image data (from the same eye because it's easier)
-    let leftEye = ctx.getImageData(canvas.width / 2 - 74,canvas.height / 2 - 120,34,34);
-    let rightEye = ctx.getImageData(canvas.width / 2 + 44,canvas.height / 2 - 120,34,34);
+    let leftEye = ctx.getImageData(
+      canvas.width / 2 - 74,
+      canvas.height / 2 - 120,
+      34,
+      34
+    );
+    let rightEye = ctx.getImageData(
+      canvas.width / 2 + 44,
+      canvas.height / 2 - 120,
+      34,
+      34
+    );
 
     let leftData = leftEye.data;
     let leftLength = leftData.length;
@@ -612,10 +621,10 @@ import {
         case "red":
           if (leftData[i] >= 20) leftData[i] = 255;
           if (rightData[i] >= 20) rightData[i] = 255;
-           leftData[i + 1] = 0;
-           rightData[i + 1] = 0;
-           leftData[i + 2] = 0;
-           rightData[i + 2] = 0;
+          leftData[i + 1] = 0;
+          rightData[i + 1] = 0;
+          leftData[i + 2] = 0;
+          rightData[i + 2] = 0;
           break;
         case "green":
           break;

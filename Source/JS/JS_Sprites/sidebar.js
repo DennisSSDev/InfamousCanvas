@@ -44,9 +44,8 @@ export default class SideBar {
       }
 
       this.drawRef.save();
-      //Too expensive
-      //this.drawRef.createGradient(0, 25, 0, 900);
-      this.drawRef.fillColor(makeColor(255, 0, 0, 1));
+      if (!invert) this.drawRef.fillColor(makeColor(255, 0, 0, 1));
+      else this.drawRef.fillColor(makeColor(0, 0, 255, 1));
       this.drawRef.close();
       this.offsetY += 25;
     }

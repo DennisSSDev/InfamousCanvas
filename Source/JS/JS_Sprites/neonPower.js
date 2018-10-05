@@ -21,6 +21,8 @@ export default class NeonPower {
     this.startLoc = startingLocation;
     this.lineWidth = lineWidth;
     this.interpColor = interpColor;
+    this.mul = 1;
+    this.OffsetIterator = 0;
   }
   update(data) {
     for (let i = 0; i < this.Offsets.length; i += 2) {
@@ -31,47 +33,55 @@ export default class NeonPower {
   render() {
     this.drawRef.open();
     this.drawRef.newL(this.startLoc.x, this.startLoc.y);
-    let OffsetIterator = 0;
+    this.OffsetIterator = 0;
     for (let i = 0; i < this.NeonData.length; i++) {
       //add the offsets here
       if (i < 10 || (i > 25 && i != 28)) {
-        let mul = Math.random() * 2 < 1 ? 1.5 : -1.5;
+        this.mul = Math.random() * 2 < 1 ? 1.5 : -1.5;
         this.drawRef.quadCurveTo(
           this.NeonData[i][0],
           this.NeonData[i][1],
-          this.NeonData[i][2] - mul, //+ this.Offsets[OffsetIterator] / 10,
-          this.NeonData[i][3] - this.Offsets[OffsetIterator] / 8 + mul
+          this.NeonData[i][2] - this.mul, //+ this.Offsets[OffsetIterator] / 10,
+          this.NeonData[i][3] - this.Offsets[this.OffsetIterator] / 8 + this.mul
         );
       } else if (i != 28) {
-        let mul = Math.random() * 2 < 1 ? 1.25 : -1.25;
+        this.mul = Math.random() * 2 < 1 ? 1.25 : -1.25;
         if (i == 10 || i == 12 || i == 14) {
           this.drawRef.quadCurveTo(
             this.NeonData[i][0],
             this.NeonData[i][1],
-            this.NeonData[i][2] - this.Offsets[OffsetIterator] / 6 + mul, //10 and 26
-            this.NeonData[i][3] - this.Offsets[OffsetIterator] / 6
+            this.NeonData[i][2] -
+              this.Offsets[this.OffsetIterator] / 6 +
+              this.mul, //10 and 26
+            this.NeonData[i][3] - this.Offsets[this.OffsetIterator] / 6
           );
         } else if (i == 17 || i == 19 || i == 21 || i == 23 || i == 25) {
           this.drawRef.quadCurveTo(
             this.NeonData[i][0],
             this.NeonData[i][1],
-            this.NeonData[i][2] + this.Offsets[OffsetIterator] / 6 + mul, //10 and 26
-            this.NeonData[i][3] - this.Offsets[OffsetIterator] / 6
+            this.NeonData[i][2] +
+              this.Offsets[this.OffsetIterator] / 6 +
+              this.mul, //10 and 26
+            this.NeonData[i][3] - this.Offsets[this.OffsetIterator] / 6
           );
         } else {
           if (i <= 15) {
             this.drawRef.quadCurveTo(
               this.NeonData[i][0],
               this.NeonData[i][1],
-              this.NeonData[i][2] + this.Offsets[OffsetIterator] / 6 + mul, //10 and 26
-              this.NeonData[i][3] + this.Offsets[OffsetIterator] / 6
+              this.NeonData[i][2] +
+                this.Offsets[this.OffsetIterator] / 6 +
+                this.mul, //10 and 26
+              this.NeonData[i][3] + this.Offsets[this.OffsetIterator] / 6
             );
           } else {
             this.drawRef.quadCurveTo(
               this.NeonData[i][0],
               this.NeonData[i][1],
-              this.NeonData[i][2] - this.Offsets[OffsetIterator] / 6 + mul, //10 and 26
-              this.NeonData[i][3] + this.Offsets[OffsetIterator] / 6
+              this.NeonData[i][2] -
+                this.Offsets[this.OffsetIterator] / 6 +
+                this.mul, //10 and 26
+              this.NeonData[i][3] + this.Offsets[this.OffsetIterator] / 6
             );
           }
         }
@@ -84,7 +94,7 @@ export default class NeonPower {
         );
       }
 
-      OffsetIterator += 2;
+      this.OffsetIterator += 2;
     }
     this.drawRef.context.lineJoin = "round";
     this.drawRef.context.lineWidth = this.lineWidth;
