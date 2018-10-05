@@ -6,6 +6,7 @@ SPRITESHEET.js
 -> Can only read sprites in a row, will not read columns
 -> Updates the selected images within the sprite and can wait until the neccesarry update should be called
 -> Handles the sprite rendering
+-> Credit for the base code goes to @William Malone, as I followed his tutorial how to make this
 ====================================================================================
 */
 

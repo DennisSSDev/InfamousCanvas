@@ -24,6 +24,7 @@ MAIN.JS
 -> All the UI related functions and objects are defined here 
     Note: ONLY js files that are referenced in the DOM have access to the "document" object, thus UI functions are forced to be defined here
 -> MAIN.JS is also encapsulated in an IFFE, to prevent function and objects GLOBAL access 
+-> Credit for the base drag & drop code goes to @Joseph Zimmerman, as I followed his tutorial how to make it
 ====================================================================================
 */
 
