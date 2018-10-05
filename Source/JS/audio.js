@@ -1,5 +1,5 @@
 export default class Audio {
-  constructor(audioElement, audioCtx, NUM_SAMPLES, bassScale=1) {
+  constructor(audioElement, audioCtx, NUM_SAMPLES, bassScale = 1) {
     this.delayNode = undefined;
     this.lowShelfNode = undefined;
     this.bassScale = bassScale;
@@ -31,8 +31,8 @@ export default class Audio {
     }
 
     // Lowshelf node for bass boost
-    if(this.lowShelfNode == undefined){
-      this.lowShelfNode =  this.audioCtx.createBiquadFilter();
+    if (this.lowShelfNode == undefined) {
+      this.lowShelfNode = this.audioCtx.createBiquadFilter();
       this.lowShelfNode.type = "lowshelf";
     }
 
@@ -43,9 +43,8 @@ export default class Audio {
 
     this.lowShelfNode.connect(this.delayNode);
 
-    this.delayNode.connect(analyserNode);   
-    
-    
+    this.delayNode.connect(analyserNode);
+
     // if (this.delayNode != undefined) {
     //   sourceNode.connect(this.delayNode);
     //   this.delayNode.connect(analyserNode);
@@ -53,7 +52,7 @@ export default class Audio {
     // else{
     //   sourceNode.connect(analyserNode);
     // }
-    
+
     // here we connect to the destination i.e. speakers
     analyserNode.connect(this.audioCtx.destination);
     return analyserNode;
@@ -82,13 +81,25 @@ export default class Audio {
     snd.play();
   }
 
-  updateAudio(){
-    if(this.bassScale > 1){
-      this.lowShelfNode.frequency.setValueAtTime(1000, this.audioCtx.currentTime);
-      this.lowShelfNode.gain.setValueAtTime(15 * this.bassScale, this.audioCtx.currentTime);
-    }else{
-			this.lowShelfNode.gain.setValueAtTime(5, this.audioCtx.currentTime);
-		}
+  updateAudio() {
+    if (this.bassScale > 1) {
+      this.lowShelfNode.frequency.setValueAtTime(
+        1000,
+        this.audioCtx.currentTime
+      );
+      this.lowShelfNode.gain.setValueAtTime(
+        15 * this.bassScale,
+        this.audioCtx.currentTime
+      );
+    } else {
+      this.lowShelfNode.gain.setValueAtTime(5, this.audioCtx.currentTime);
+    }
+  }
+  get AudioContext() {
+    return this.audioCtx;
+  }
+  get AnalyserNode() {
+    return this.analyserNode;
   }
 }
 

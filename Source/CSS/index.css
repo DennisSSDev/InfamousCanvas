@@ -168,3 +168,9 @@ button:hover {
   cursor: pointer;
   background-color: rgb(128, 0, 0);
 }
+
+#dropzone {
+  border-style: solid;
+  border-radius: 3px;
+  border-color: red;
+}

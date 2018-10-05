@@ -60,16 +60,24 @@ import {
 
   let neonPowerArr = [];
   let lightning = [];
-  let sideBar;
-  let sideBar2;
+  let sideBar, sideBar2;
 
   let canvasOff, ctxOff, grd, obj_cv;
 
   let dataLength, total;
+
+  let dropArea;
+
   //Serves as the main entrance point
   function init(data_) {
     //grab the preloaded images
     imgData = data_;
+
+    dropArea = document.querySelector("#dropzone");
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+    dropArea.addEventListener("drop", handleDrop, false);
 
     //canvas init
     canvas = document.querySelector("canvas");
@@ -265,6 +273,36 @@ import {
     // start animation loop
     update(0);
   }
+  let preventDefaults = e => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  let handleDrop = e => {
+    let dt = e.dataTransfer;
+    let files = dt.files;
+    console.log(files);
+    handleFiles(files);
+  };
+
+  let handleFiles = files => {
+    let reader = new FileReader();
+    reader.addEventListener("load", e => {
+      let data = e.target.result;
+      AudioManager.AudioContext.decodeAudioData(data, buffer => {
+        playSound(buffer);
+      });
+    });
+    reader.readAsArrayBuffer(files[0]);
+  };
+
+  let playSound = buffer => {
+    let source = AudioManager.AudioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(AudioManager.AnalyserNode);
+    source.start(0);
+  };
+
   let createGradientWithCurves = AudioData => {
     // Create off-screen canvas and gradient
     ctxOff.clearRect(0, 0, 700, 700);
@@ -344,7 +382,7 @@ import {
   };
 
   //do 60 times a second
-  function update(frameCount_) {
+  let update = frameCount_ => {
     requestAnimationFrame(() => update(frameCount_));
     clearScreen(ctx);
 
@@ -372,7 +410,7 @@ import {
     // Sidebar equalizer
     if (sidebars) {
       sideBar.update(50, 26, false, highFreq);
-      sideBar2.update(50, 26, true, highFreq);
+      sideBar2.update(50, 26, true, highFreq, canvas.width);
     }
 
     let j = 0;
@@ -497,7 +535,7 @@ import {
 
     // AUDIO
     AudioManager.updateAudio();
-  }
+  };
 
   let drawFlap = () => {
     dw.newL();

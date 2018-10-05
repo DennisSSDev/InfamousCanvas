@@ -9,24 +9,31 @@ export default class SideBar {
     this.offsetX = 0;
     this.offsetY = 0;
   }
-  update(widthMultiplier = 1, barNumber = 1, invert = false, audioData) {
+  update(
+    widthMultiplier = 1,
+    barNumber = 1,
+    invert = false,
+    audioData,
+    canvasX = 0,
+    canvasY = 0
+  ) {
     this.offsetY = 0;
     for (let i = 0; i < barNumber; i++) {
       this.drawRef.newL(this.originX, this.originY + this.offsetY);
       if (invert) {
         this.drawRef.toVertex(
-          this.originX - (5 + widthMultiplier) - audioData[i],
+          canvasX - (5 + widthMultiplier) - audioData[i],
           this.originY + this.offsetY
         );
         this.drawRef.toVertex(
-          this.originX - (12 + widthMultiplier) - audioData[i],
+          canvasX - (12 + widthMultiplier) - audioData[i],
           this.originY + 5 + this.offsetY
         );
         this.drawRef.toVertex(
-          this.originX - (5 + widthMultiplier) - audioData[i],
+          canvasX - (5 + widthMultiplier) - audioData[i],
           this.originY + 10 + this.offsetY
         );
-        this.drawRef.toVertex(this.originX, this.originY + 10 + this.offsetY);
+        this.drawRef.toVertex(canvasX, this.originY + 10 + this.offsetY);
       } else {
         this.drawRef.toVertex(
           this.originX + 5 + widthMultiplier + audioData[i],
