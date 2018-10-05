@@ -39,7 +39,8 @@ export default class Audio {
     sourceNode.connect(this.lowShelfNode);
 
     this.lowShelfNode.connect(this.delayNode);
-    
+
+    this.delayNode.connect(analyserNode);   
     
     // if (this.delayNode != undefined) {
     //   sourceNode.connect(this.delayNode);
@@ -50,7 +51,6 @@ export default class Audio {
     // }
     
     // here we connect to the destination i.e. speakers
-    this.delayNode.connect(analyserNode);
     analyserNode.connect(this.audioCtx.destination);
     return analyserNode;
   }
@@ -79,8 +79,12 @@ export default class Audio {
   }
 
   updateAudio(){
-    this.lowShelfNode.frequency.setValueAtTime(1000, this.audioCtx.currentTime);
-    this.lowShelfNode.gain.setValueAtTime(15 * this.bassScale, this.audioCtx.currentTime);
+    if(this.bassScale > 1){
+      this.lowShelfNode.frequency.setValueAtTime(1000, this.audioCtx.currentTime);
+      this.lowShelfNode.gain.setValueAtTime(15 * this.bassScale, this.audioCtx.currentTime);
+    }else{
+			this.lowShelfNode.gain.setValueAtTime(5, this.audioCtx.currentTime);
+		}
   }
 }
 

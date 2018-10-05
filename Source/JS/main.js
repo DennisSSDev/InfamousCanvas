@@ -6,6 +6,7 @@ import { WingData, FlapData, NeonData } from "./JS_Sprites/wingData.js";
 import SpriteSheet from "./JS_Sprites/SpriteSheet.js";
 import NeonPower from "./JS_Sprites/neonPower.js";
 import Lightning from "./JS_Sprites/lightning.js";
+import SideBar from "./JS_Sprites/sidebar.js";
 import {
   makeColor,
   clearScreen,
@@ -38,8 +39,9 @@ import {
   //let brightness = 1; // brightness modifier
   //let frameCount = 0;
   // Img effect bools
-  let invert, randomFilter, neon, noise, bInvert;
+  let invert, randomFilter, neon, noise, bInvert, sidebars;
   invert = randomFilter = neon = noise = bInvert = false;
+  sidebars = true;
   let time, adjustment, data, waveData; // data will hold the audio array
   time = adjustment = data = waveData = 0;
 
@@ -229,10 +231,10 @@ import {
       ),
       new NeonPower(dw, NeonData, makeColor(255, 210, 260, 1))
     ];
-  // create a new array of 8-bit integers (0-255)
-    // sideBar = new SideBar(0, 7, 2, dw);
-    // sideBar2 = new SideBar(canvas.width, 7, 2, dw);
-    // AudioManager.selectStream("./media/infamousTrack.mp3");
+  
+    sideBar = new SideBar(0, 7, 2, dw);
+    sideBar2 = new SideBar(canvas.width, 7, 2, dw);
+    AudioManager.selectStream("./media/infamousTrack.mp3");
 
     data = new Uint8Array(NUM_SAMPLES / 2);
     waveData = new Uint8Array(NUM_SAMPLES / 2);
@@ -280,10 +282,13 @@ import {
     };
     document.querySelector("#minMax").onclick = function() {
       let selectors = document.querySelector("#selectors");
-      
+      let control = document.querySelector("#minMax");
+
       if(selectors.style.visibility == "visible"){
+        control.innerHTML = "Show Controls";
         selectors.style.visibility = "hidden";
       }else{
+        control.innerHTML = "Hide Controls";
         selectors.style.visibility = "visible";
       }
     };
@@ -302,6 +307,9 @@ import {
     document.querySelector("#invert").addEventListener("change", e => {
       invert = e.target.checked;
     });
+    document.querySelector("#sidebars").addEventListener("change", e => {
+      sidebars = e.target.checked;
+    });
     // Image effect sliders
     document.querySelector("#wingScaleSlider").addEventListener("input", e => {
       wingScale = e.target.value;
@@ -319,16 +327,12 @@ import {
   };
 
   //do 60 times a second
-<<<<<<< HEAD
-  function update() {
-    requestAnimationFrame(update);
-=======
   function update(frameCount_) {
     requestAnimationFrame(() =>(update(frameCount_)));
     
->>>>>>> 6d1822eecddd1717f946e899884b7ac6902293e1
     AudioManager.analyserNode.getByteFrequencyData(data);
     AudioManager.analyserNode.getByteTimeDomainData(waveData);
+
     let dataLength = data.length;
     let total = 0;
     for (let mem of data) {
@@ -353,8 +357,12 @@ import {
       highFreq[i] = data[i + 20];
     }
 
-    // sideBar.update(50,5,false,highFreq);
-    // sideBar2.update(50,5,true, highFreq);
+    // Sidebar equalizer
+    if(sidebars){
+      sideBar.update(50,5,false,highFreq);
+      sideBar2.update(50,5,true, highFreq);
+    }
+
     let j = 0;
     for (let item of bdSpriteArray) {
       item.update(
@@ -443,9 +451,7 @@ import {
     dw.scale(-1, 1);
     vortexEyes[1].update();
     vortexEyes[1].render();
-    dw.restore();
-
-    
+    dw.restore();    
 
     // Change colors every 2 seconds
     if (frameCount_ > 60) {
