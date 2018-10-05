@@ -36,11 +36,15 @@ export default class Audio {
       this.lowShelfNode.type = "lowshelf";
     }
 
+    // Connect the source node to both the destinationa and other nodes
+    // to get a true reverb effect
+    sourceNode.connect(this.audioCtx.destination);
     sourceNode.connect(this.lowShelfNode);
 
     this.lowShelfNode.connect(this.delayNode);
 
     this.delayNode.connect(analyserNode);   
+    
     
     // if (this.delayNode != undefined) {
     //   sourceNode.connect(this.delayNode);
