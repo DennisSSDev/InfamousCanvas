@@ -1,3 +1,12 @@
+/*
+CSS for the UI elements on screen
+Note worthy css:
+-- Everything is contained in a relative div, which allows 
+the UI div to be spaced with Absolute tags, thus placing the UI on top of the canvas
+-- #dropzone.highlight allows me to dynamically adjust the CSS property when the 
+user drags in their own audio file
+*/
+
 @font-face {
   font-family: "Capture It";
   src: url("../fonts/captureit.ttf");
@@ -18,6 +27,12 @@ body {
   padding: 0;
   top: 0;
   left: 0;
+}
+
+#titlebar{
+  font-size: 25px;
+   color: white;
+   margin: 0;
 }
 
 canvas {
@@ -91,6 +106,8 @@ input[type="checkbox"] {
   justify-content: flex-end;
   margin-left: auto;
   margin-right: 10%;
+  top: -40px;
+  margin-bottom: -40px;
 }
 
 #minMax {
@@ -143,8 +160,9 @@ audio {
 
 #status {
   color: white;
+  font-size: 10px;
   background-color: rgba(0, 0, 0, 0.75);
-  margin-top: 0px;
+  margin-top: 2px;
   margin-bottom: 0px;
   padding: 5px;
   border-radius: 10px;
@@ -170,7 +188,19 @@ button:hover {
 }
 
 #dropzone {
+  margin-top: 0px;
+  padding: 5px 5px 5px 5px;
   border-style: solid;
   border-radius: 3px;
   border-color: red;
+}
+
+#dropzone.highlight {
+  background-color: red;
+}
+
+#AudioDrop p{
+  text-align: left;
+  font-size: 20px;
+  margin: 20px 0px 5px 0px;
 }
