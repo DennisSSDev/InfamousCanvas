@@ -1,5 +1,11 @@
-//Just the vertex data of each wing and flop
 
+/*
+====================================================================================
+WINGDATA.JS
+-> Just the vertex data of each wing and flop
+-> FUTURE IMPROVEMENTS: convert the given data into JSON format
+====================================================================================
+*/
 const FlapData = [
   [60, -180],
   [55, -300],
@@ -77,7 +83,7 @@ const FlapData = [
   [-70, 120],
   [-30, 60]
 ];
-
+// Red wing Data (x,y)
 const WingData = [
   [30, -20],
   [35, -95],
@@ -155,7 +161,7 @@ const WingData = [
   [-80, 520],
   [-120, 400]
 ];
-
+//Neon verticies (x1,y1,x2,y2) according to quadratic curves
 const NeonData = [
   [70, 65, 85, 85],
   [105, 60, 95, 30],
@@ -187,5 +193,4 @@ const NeonData = [
   [-5, 90, 30, 100],
   [0, 0, 51, 51]
 ];
-
 export { WingData, FlapData, NeonData };
