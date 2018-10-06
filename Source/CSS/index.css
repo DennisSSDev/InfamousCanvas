@@ -29,10 +29,10 @@ body {
   left: 0;
 }
 
-#titlebar{
+#titlebar {
   font-size: 25px;
-   color: white;
-   margin: 0;
+  color: white;
+  margin: 0;
 }
 
 canvas {
@@ -73,6 +73,8 @@ input[type="checkbox"] {
   position: relative;
   margin-right: auto;
   margin-left: 5%;
+  bottom: 40px;
+  margin-bottom: -40px;
 }
 
 #selectors {
@@ -85,6 +87,7 @@ input[type="checkbox"] {
   background: rgb(105, 105, 105);
   border-radius: 5px;
   visibility: visible;
+
 }
 
 #checkboxes {
@@ -199,7 +202,7 @@ button:hover {
   background-color: red;
 }
 
-#AudioDrop p{
+#AudioDrop p {
   text-align: left;
   font-size: 20px;
   margin: 20px 0px 5px 0px;
